@@ -31,5 +31,5 @@ solve2 inputFile = do
 
 main :: IO ()
 main = do
-    solve1 "input.txt"
-    solve2 "input.txt"
+    solve1 "sample_input.txt"
+    solve2 "sample_input.txt"
