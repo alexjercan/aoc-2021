@@ -34,8 +34,8 @@ moveM2 ("up", dy) = do
     put (x, y, aim - dy)
 moveM2 _ = undefined
 
-solution1 :: [String] -> Int
-solution1 xs = answer $ execState (mapM  moveM1 cmds) (0, 0, 0)
+solution :: (Command -> Move ()) -> [String] -> Int
+solution moveM xs = answer $ execState (mapM moveM cmds) (0, 0, 0)
     where
         answer (x, y, _) = x * y
         cmds = map parseCommand xs
@@ -43,18 +43,12 @@ solution1 xs = answer $ execState (mapM  moveM1 cmds) (0, 0, 0)
 solve1 :: String -> IO ()
 solve1 inputFile = do
     content <- readFile inputFile
-    print (solution1 $ lines content)
-
-solution2 :: [String] -> Int
-solution2 xs = answer $ execState (mapM  moveM2 cmds) (0, 0, 0)
-    where
-        answer (x, y, _) = x * y
-        cmds = map parseCommand xs
+    print (solution moveM1 $ lines content)
 
 solve2 :: String -> IO ()
 solve2 inputFile = do
     content <- readFile inputFile
-    print (solution2 $ lines content)
+    print (solution moveM2 $ lines content)
 
 main :: IO ()
 main = do
