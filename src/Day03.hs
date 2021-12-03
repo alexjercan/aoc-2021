@@ -1,8 +1,8 @@
-module Main where
+module Day03 where
 
-import Data.List
-import Data.Function
-import Data.Char
+import Data.List ( maximumBy, minimumBy, group, sort, transpose )
+import Data.Function ( on )
+import Data.Char ( digitToInt )
 
 mostCommon :: Ord a => [a] -> a
 mostCommon = head . maximumBy (compare `on` length) . group . sort
@@ -19,11 +19,6 @@ solution1 xs = gamma * epsilon
     where gamma = binaryStringToInt $ map mostCommon $ transpose xs
           epsilon = binaryStringToInt $ map leastCommon $ transpose xs
 
-solve1 :: String -> IO ()
-solve1 inputFile = do
-    content <- readFile inputFile
-    print (solution1 $ lines content)
-
 listProp :: ([Char] -> Char) -> [[Char]] -> [Char]
 listProp _ [xs] = xs
 listProp propF xs = c : listProp propF (map tail $ filter ((==c) . head) xs)
@@ -34,12 +29,14 @@ solution2 xs = oxygen * co2
     where oxygen = binaryStringToInt $ listProp mostCommon xs
           co2 = binaryStringToInt $ listProp leastCommon xs
 
-solve2 :: String -> IO ()
-solve2 inputFile = do
-    content <- readFile inputFile
-    print (solution2 $ lines content)
+solve1 :: String -> Int
+solve1 content = solution1 $ lines content
 
-main :: IO ()
-main = do
-    solve1 "sample_input.txt"
-    solve2 "sample_input.txt"
+solve2 :: String -> Int
+solve2 content = solution2 $ lines content
+
+solve :: String -> IO ()
+solve filePath = do
+    content <- readFile filePath
+    print $ solve1 content
+    print $ solve2 content

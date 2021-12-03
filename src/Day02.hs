@@ -1,6 +1,7 @@
-module Main where
+module Day02 where
 
 import Control.Monad.State
+    ( execState, MonadState(put, get), State )
 
 parseCommand :: String -> (String, Int)
 parseCommand c = (head cs, read $ cs !! 1)
@@ -40,17 +41,15 @@ solution moveM xs = answer $ execState (mapM moveM cmds) (0, 0, 0)
         answer (x, y, _) = x * y
         cmds = map parseCommand xs
 
-solve1 :: String -> IO ()
-solve1 inputFile = do
-    content <- readFile inputFile
-    print (solution moveM1 $ lines content)
+solve1 :: String -> Int
+solve1 content = solution moveM1 $ lines content
 
-solve2 :: String -> IO ()
-solve2 inputFile = do
-    content <- readFile inputFile
-    print (solution moveM2 $ lines content)
+solve2 :: String -> Int
+solve2 content = solution moveM2 $ lines content
 
-main :: IO ()
-main = do
-    solve1 "sample_input.txt"
-    solve2 "sample_input.txt"
+solve :: String -> IO ()
+solve filePath = do
+    content <- readFile filePath
+    print $ solve1 content
+    print $ solve2 content
+
