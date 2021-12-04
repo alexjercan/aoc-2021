@@ -1,19 +1,19 @@
 {-# OPTIONS_GHC -F -pgmF htfpp #-}
 
-module Day04Test where
+module Day24Test where
 
-import Day04
+import Day24
 import Test.Framework
 
 sampleInput :: IO String
-sampleInput = readFile "input/day04/sample_input.txt"
+sampleInput = readFile "input/day24/sample_input.txt"
 
 test_solve1 :: IO ()
 test_solve1 = do
     content <- sampleInput
-    assertEqual 4512 $ solve1 content
+    assertEqual 0 $ solve1 content
 
 test_solve2 :: IO ()
 test_solve2 = do
     content <- sampleInput
-    assertEqual 1924 $ solve2 content
+    assertEqual 0 $ solve2 content
