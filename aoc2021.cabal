@@ -14,9 +14,7 @@ executable Aoc2021
 
     build-depends:    base ^>=4.13.0.0,
                       mtl
-    other-modules:    Day01,
-                      Day02,
-                      Day03
+    other-modules:    Day01, Day02, Day03, Day04
     hs-source-dirs:   src
     default-language: Haskell2010
 
@@ -27,12 +25,8 @@ test-suite Aoc2021Test
     build-depends:    base ^>=4.13.0.0,
                       mtl,
                       HTF > 0.9
-    other-modules:    Day01Test,
-                      Day02Test,
-                      Day03Test,
-                      Day01,
-                      Day02,
-                      Day03
+    other-modules:    Day01Test, Day02Test, Day03Test, Day04Test,
+                      Day01, Day02, Day03, Day04
     hs-source-dirs:   test,
                       src
     default-language: Haskell2010
