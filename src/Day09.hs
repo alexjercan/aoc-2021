@@ -7,7 +7,7 @@ solve2 :: String -> Int
 solve2 content = undefined
 
 solve :: String -> IO ()
-solve filePath = do
-    content <- readFile filePath
+solve content = do
     print $ solve1 content
     print $ solve2 content
+

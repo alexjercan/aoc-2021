@@ -1,7 +1,18 @@
 module Main where
 
 import Text.Printf (printf)
-import System.Environment (getArgs)
+import System.Environment ( getArgs, getEnv )
+import System.Exit ( exitSuccess, exitWith, ExitCode(ExitFailure) )
+import Control.Monad.Catch ( MonadThrow )
+import Control.Monad.IO.Class ( MonadIO )
+import Network.HTTP.Conduit
+    ( parseRequest, Request(requestHeaders), Response(responseBody) )
+import Network.HTTP.Simple ( httpBS )
+import Network.HTTP.Types ( hCookie )
+import Configuration.Dotenv ( load, loadFile, defaultConfig )
+
+import qualified Data.ByteString.Char8 as B8
+
 import qualified Day01
 import qualified Day02
 import qualified Day03
@@ -27,13 +38,6 @@ import qualified Day22
 import qualified Day23
 import qualified Day24
 import qualified Day25
-
-usage :: IO ()
-usage =
-    putStrLn "cabal run Aoc2021 {day}"
-
-dayToInputPath :: Int -> String
-dayToInputPath day = "input/day" ++ printf "%02d" day ++ "/input.txt"
 
 runDay :: Int -> String -> IO ()
 runDay 1 = Day01.solve
@@ -61,12 +65,52 @@ runDay 22 = Day22.solve
 runDay 23 = Day23.solve
 runDay 24 = Day24.solve
 runDay 25 = Day25.solve
-runDay _ = error "Day does not exist"
+runDay _ = undefined
+
+readDay :: Int -> IO String
+readDay day = do
+    readFile $ "input/day" ++ printf "%02d" day ++ "/input.txt"
+
+readDayFromURL :: (MonadThrow m, MonadIO m) => Int -> String -> m String
+readDayFromURL day session = do
+    initReq <- parseRequest $ "https://adventofcode.com/" ++ "2021/day/" ++ show day ++ "/input"
+    response <- httpBS initReq {
+          requestHeaders = [(hCookie, B8.pack $ "session=" ++ session)]
+    }
+    return $ B8.unpack $ responseBody response
+
+mainOnline :: Int -> IO ()
+mainOnline day = do
+    loadFile defaultConfig >>= load True
+    session <- getEnv "AOC_SESSION"
+    content <- readDayFromURL day session
+    runDay day content
+
+mainOffline ::Int ->  IO ()
+mainOffline day = do
+    content <- readDay day
+    runDay day content
 
 main :: IO ()
 main = do
     args <- getArgs
-    case args of
-        [day] -> runDay (read day) (dayToInputPath $ read day)
-        _     -> usage
+    (method, day) <- parse args
+    case method of
+        0 -> mainOnline day
+        1 -> mainOffline day
+        _ -> undefined
+
+parse :: [[Char]] -> IO (Int, Int)
+parse ["-h"]            = usage   >> exitSuccess
+parse ["-v"]            = version >> exitSuccess
+parse []                = read <$> getContents
+parse ["-online", day]  = return (0, read day)
+parse [day]             = return (1, read day)
+parse _                 = usage   >> exitWith (ExitFailure 1)
+
+usage :: IO ()
+usage   = putStrLn "Usage: aoc2021 [-vh] day"
+
+version :: IO ()
+version = putStrLn "Aoc2021"
 

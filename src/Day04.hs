@@ -55,12 +55,6 @@ solve2 content = fromJust $ solution2 rs boards []
     where (rs, bs) = parseContent content
           boards = map (map $ map (,False)) bs
 
-solve :: String -> IO ()
-solve filePath = do
-    content <- readFile filePath
-    print $ solve1 content
-    print $ solve2 content
-
 parseContent :: String -> ([Int], [[[Int]]])
 parseContent content = (parseReadings $ head xs, parseBingos $ tail xs)
     where xs = lines content
@@ -77,3 +71,9 @@ parseBingos [] = []
 parseBingos xs = parseBingo ys : parseBingos ys'
     where ys = takeWhile (not . all isSpace) (tail xs)
           ys' = dropWhile (not . all isSpace) (tail xs)
+
+solve :: String -> IO ()
+solve content = do
+    print $ solve1 content
+    print $ solve2 content
+

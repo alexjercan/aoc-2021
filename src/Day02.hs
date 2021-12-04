@@ -48,8 +48,7 @@ solve2 :: String -> Int
 solve2 content = solution moveM2 $ lines content
 
 solve :: String -> IO ()
-solve filePath = do
-    content <- readFile filePath
+solve content = do
     print $ solve1 content
     print $ solve2 content
 
