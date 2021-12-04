@@ -1,64 +1,53 @@
-{-# LANGUAGE TupleSections #-}
 module Day04 where
 
-import Data.Char
-import Data.List (elemIndex, transpose)
-import Control.Applicative
-import Data.Maybe (fromMaybe, fromJust)
-import Data.List.Split
+import Data.Char ( isSpace )
+import Data.List ( maximumBy, minimumBy, (\\), inits, transpose )
+import Data.Maybe ( listToMaybe, mapMaybe )
+import Data.List.Split ( splitOn )
+import Data.Function (on)
 
-type Board = [[(Int, Bool)]]
+orMasks :: [[Bool]] -> [[Bool]] -> [[Bool]]
+orMasks = zipWith (zipWith (||))
 
-markNumber :: Int -> [Board] -> [Board]
-markNumber n = map (mark n)
+emptyMask :: [[Bool]]
+emptyMask = replicate 5 $ replicate 5 False
 
-mark :: Int -> Board -> Board
-mark n = map (map (\(m, y) -> (m, y || m == n)))
+marks :: [Int] -> [[Int]] -> [[Bool]]
+marks ns b = foldl (\acc x -> orMasks acc $ mark x b) emptyMask ns
 
-isComplete :: Board -> Bool
-isComplete board = anyRows || anyCols
-    where  asBools = map (map snd) board
-           anyRows = any (all (==True)) asBools
-           anyCols = any (all (==True)) (transpose asBools)
+mark :: Int -> [[Int]] -> [[Bool]]
+mark n = map (map (==n))
 
-computeResult :: Int -> Board -> Int
-computeResult lastDraw board = lastDraw * s
-    where s = sum $ concatMap (map fst . filter ((==False) . snd)) board
+isBingo :: [Int] -> [[Int]] -> Bool
+isBingo rs bs = (||) <$> anyRows <*> anyCols $ marks rs bs
+    where anyRows b = any (all (==True)) b
+          anyCols b = any (all (==True)) (transpose b)
 
-solution1 :: [Int] -> [Board] -> Maybe Int
-solution1 (x:xs) boards =
-    let newBoards = markNumber x boards
-        completeBoards = filter isComplete newBoards
-        results = map (computeResult x) completeBoards
-     in case results of
-         [] -> solution1 xs newBoards
-         r  -> return $ head r
-solution1 _ _ = Nothing
+whichBingo :: [Int] -> [[Int]] -> Maybe [Int]
+whichBingo rs b = listToMaybe $ dropWhile (not . flip isBingo b) irs
+    where irs = inits rs
 
-solution2 :: [Int] -> [Board] -> [Board] -> Maybe Int
-solution2 (x:xs) rem fin =
-    let newRem = markNumber x rem
-        newRem' = filter (not . isComplete) newRem
-        newFin = fin ++ filter isComplete newRem
-     in case newRem' of
-         [] -> return $ computeResult x (last newFin)
-         _  -> solution2 xs newRem' newFin
-solution2 _ _ _ = Nothing
+solution1 :: [Int] -> [[[Int]]] -> Int
+solution1 rs bs = last x * sum (concat b \\ x)
+    where xs = mapMaybe (whichBingo rs) bs
+          (x, b) = minimumBy (compare `on` length . fst) $ zip xs bs
+
+solution2 :: [Int] -> [[[Int]]] -> Int
+solution2 rs bs = last x * sum (concat b \\ x)
+    where xs = mapMaybe (whichBingo rs) bs
+          (x, b) = maximumBy (compare `on` length . fst) $ zip xs bs
 
 solve1 :: String -> Int
-solve1 content = fromJust $ solution1 rs boards
+solve1 content = solution1 rs bs
     where (rs, bs) = parseContent content
-          boards = map (map $ map (,False)) bs
 
 solve2 :: String -> Int
-solve2 content = fromJust $ solution2 rs boards []
+solve2 content = solution2 rs bs
     where (rs, bs) = parseContent content
-          boards = map (map $ map (,False)) bs
 
 parseContent :: String -> ([Int], [[[Int]]])
 parseContent content = (parseReadings $ head xs, parseBingos $ tail xs)
     where xs = lines content
-          getNext ys = dropWhile (all isSpace) ys
 
 parseReadings :: String -> [Int]
 parseReadings = map read . splitOn ","

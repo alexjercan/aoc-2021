@@ -104,7 +104,7 @@ parse :: [[Char]] -> IO (Int, Int)
 parse ["-h"]            = usage   >> exitSuccess
 parse ["-v"]            = version >> exitSuccess
 parse []                = read <$> getContents
-parse ["--online", day]  = return (0, read day)
+parse ["--online", day] = return (0, read day)
 parse [day]             = return (1, read day)
 parse _                 = usage   >> exitWith (ExitFailure 1)
 
