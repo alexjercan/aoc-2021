@@ -11,9 +11,9 @@ sampleInput = readFile "input/day05/sample_input.txt"
 test_solve1 :: IO ()
 test_solve1 = do
     content <- sampleInput
-    assertEqual 0 $ solve1 content
+    assertEqual 5 $ solve1 content
 
 test_solve2 :: IO ()
 test_solve2 = do
     content <- sampleInput
-    assertEqual 0 $ solve2 content
+    assertEqual 12 $ solve2 content

@@ -104,12 +104,12 @@ parse :: [[Char]] -> IO (Int, Int)
 parse ["-h"]            = usage   >> exitSuccess
 parse ["-v"]            = version >> exitSuccess
 parse []                = read <$> getContents
-parse ["--online", day] = return (0, read day)
-parse [day]             = return (1, read day)
+parse [day]             = return (0, read day)
+parse ["--off", day]    = return (1, read day)
 parse _                 = usage   >> exitWith (ExitFailure 1)
 
 usage :: IO ()
-usage   = putStrLn "Usage: aoc2021 [-vh] [--online] day"
+usage   = putStrLn "Usage: aoc2021 [-vh] [--off] day"
 
 version :: IO ()
 version = putStrLn "Aoc2021"
