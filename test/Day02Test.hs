@@ -5,15 +5,13 @@ module Day02Test where
 import Day02
 import Test.Framework
 
-sampleInput :: IO String
-sampleInput = readFile "input/day02/sample_input.txt"
+sampleInput :: String
+sampleInput = "forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2\n"
 
 test_solve1 :: IO ()
 test_solve1 = do
-    content <- sampleInput
-    assertEqual 150 $ solve1 content
+    assertEqual 150 $ solve1 sampleInput
 
 test_solve2 :: IO ()
 test_solve2 = do
-    content <- sampleInput
-    assertEqual 900 $ solve2 content
+    assertEqual 900 $ solve2 sampleInput
