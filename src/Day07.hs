@@ -29,13 +29,13 @@ median roundF xs
 
 solution1 :: [Int] -> Int
 solution1 xs = min (cost1 $ diffAbs med1 xs) (cost2 $ diffAbs med2 xs)
-    where med1 = median floor xs
-          med2 = median ceiling xs
+    where med1= median (floor :: Float -> Int) xs
+          med2 = median (ceiling :: Float -> Int) xs
 
 solution2 :: [Int] -> Int
 solution2 xs = min (cost2 $ diffAbs avg1 xs) (cost2 $ diffAbs avg2 xs)
-    where avg1 = average floor xs
-          avg2 = average ceiling xs
+    where avg1 = average (floor :: Float -> Int) xs
+          avg2 = average (ceiling :: Float -> Int) xs
 
 solve1 :: String -> Int
 solve1 = solution1 . parseContent
