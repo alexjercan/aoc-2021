@@ -69,7 +69,7 @@ runDay _ = undefined
 
 readDay :: Int -> IO String
 readDay day = do
-    readFile $ "input/day" ++ printf "%02d" day ++ "/input.txt"
+    readFile $ "input/day" ++ printf "%02d" day ++ ".input"
 
 readDayFromURL :: (MonadThrow m, MonadIO m) => Int -> String -> m String
 readDayFromURL day session = do
@@ -104,12 +104,12 @@ parse :: [[Char]] -> IO (Int, Int)
 parse ["-h"]            = usage   >> exitSuccess
 parse ["-v"]            = version >> exitSuccess
 parse []                = read <$> getContents
-parse [day]             = return (0, read day)
-parse ["--off", day]    = return (1, read day)
+parse [day]             = return (1, read day)
+parse ["--on", day]     = return (0, read day)
 parse _                 = usage   >> exitWith (ExitFailure 1)
 
 usage :: IO ()
-usage   = putStrLn "Usage: aoc2021 [-vh] [--off] day"
+usage   = putStrLn "Usage: aoc2021 [-vh] [--on] day"
 
 version :: IO ()
 version = putStrLn "Aoc2021"

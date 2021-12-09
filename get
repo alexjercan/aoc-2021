@@ -11,7 +11,6 @@ thisyear="$(date +%Y)"
 thismonth="$(date +%m)"
 thisday="$(date +%d)"
 
-echo $AOC_SESSION
 mkdir -p input
 
 year=2021
