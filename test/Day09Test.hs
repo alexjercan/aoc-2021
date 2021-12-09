@@ -14,4 +14,4 @@ test_solve1 = do
 
 test_solve2 :: IO ()
 test_solve2 = do
-    assertEqual 0 $ solve2 sampleInput
+    assertEqual 1134 $ solve2 sampleInput
