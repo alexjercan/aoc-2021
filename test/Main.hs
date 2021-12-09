@@ -10,8 +10,8 @@ import {-@ HTF_TESTS @-} Day05Test
 import {-@ HTF_TESTS @-} Day06Test
 import {-@ HTF_TESTS @-} Day07Test
 import {-@ HTF_TESTS @-} Day08Test
-{-
 import {-@ HTF_TESTS @-} Day09Test
+{-
 import {-@ HTF_TESTS @-} Day10Test
 import {-@ HTF_TESTS @-} Day11Test
 import {-@ HTF_TESTS @-} Day12Test
