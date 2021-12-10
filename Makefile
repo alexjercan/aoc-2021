@@ -74,4 +74,7 @@ Day24.hs:
 Day25.hs:
 	cabal run Aoc2021 25
 
+%.hs:
+	cabal test
+
 .PHONY: Day01.hs Day03.hs Day04.hs Day05.hs Day06.hs Day07.hs Day08.hs Day09.hs Day10.hs Day11.hs Day12.hs Day13.hs Day14.hs Day15.hs Day16.hs Day17.hs Day18.hs Day19.hs Day20.hs Day21.hs Day22.hs Day23.hs Day24.hs Day25.hs
