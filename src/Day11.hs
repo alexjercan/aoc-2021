@@ -1,9 +1,45 @@
-{-# LANGUAGE TupleSections #-}
-
 module Day11 where
 
-import Control.Monad.State
-import Data.Char
+import Data.Char (digitToInt)
+import qualified Data.Map as M
+import Data.Maybe (mapMaybe)
+
+type Board = M.Map (Int, Int) Int
+
+indexMap :: [[Int]] -> Board
+indexMap ms = M.fromList $ map (\(i, j) -> ((i, j), ms !! i !! j)) indices
+  where
+    n = length ms
+    m = length $ head ms
+    indices = [(i, j) | i <- [0 .. n - 1], j <- [0 .. m - 1]]
+
+neighbors :: (Int, Int) -> [(Int, Int)]
+neighbors p@(i, j) =
+    filter (/= p) [(i', j') | i' <- [i - 1 .. i + 1], j' <- [j - 1 .. j + 1]]
+
+increment :: Board -> Board
+increment = M.map (+ 1)
+
+neighborFlashCount :: Board -> (Int, Int) -> Int
+neighborFlashCount m = length . filter (> 9) . mapMaybe (m M.!?) . neighbors
+
+flash :: [(Int, Int)] -> Board -> Board
+flash f m =
+    if null f'
+        then m
+        else flash (f' ++ f) m'
+  where
+    f' = M.keys $ M.filter (> 9) m
+    m' =
+        M.mapWithKey
+            (\k v ->
+                 if k `elem` f ++ f'
+                     then 0
+                     else v + neighborFlashCount m k)
+            m
+
+step :: Board -> Board
+step = flash [] . increment
 
 parseContent :: String -> [[Int]]
 parseContent = map parseLine . lines
@@ -11,123 +47,11 @@ parseContent = map parseLine . lines
 parseLine :: String -> [Int]
 parseLine = map digitToInt
 
-mkInput :: [[Int]] -> [[(Int, Bool)]]
-mkInput = map (map (, False))
-
-borderInf :: [[(Int, Bool)]] -> [[(Int, Bool)]]
-borderInf ms =
-    [replicate n (0, True)] ++
-    map (\xs -> (0, True) : xs ++ [(0, True)]) ms ++ [replicate n (0, True)]
-  where
-    n = 2 + length (head ms)
-
-at :: [[a]] -> Int -> Int -> a
-at ms i j = ms !! i !! j
-
-inc :: (Int, Int) -> [[(Int, Bool)]] -> [[(Int, Bool)]]
-inc (i, j) vs
-    | snd (at vs i j) = vs
-    | otherwise = up ++ [xs ++ [(x + 1, v)] ++ ys] ++ down
-      where
-        (up, l:down) = splitAt i vs
-        (xs, (x, v):ys) = splitAt j l
-
-mark :: (Int, Int) -> [[(Int, Bool)]] -> [[(Int, Bool)]]
-mark (i, j) ms = up ++ [xs ++ [(x + 1, True)] ++ ys] ++ down
-  where
-    (up, l:down) = splitAt i ms
-    (xs, (x, _):ys) = splitAt j l
-
-reset :: (Int, Int) -> [[(Int, Bool)]] -> [[(Int, Bool)]]
-reset (i, j) vs =
-    up ++
-    [ xs ++
-      [ ( if x > 9
-              then 0
-              else x
-        , False)
-      ] ++
-      ys
-    ] ++
-    down
-  where
-    (up, l:down) = splitAt i vs
-    (xs, (x, _):ys) = splitAt j l
-
-neighs :: (Int, Int) -> [(Int, Int)]
-neighs (i, j) =
-    filter
-        (/= (i, j))
-        [(i', j') | i' <- [i - 1 .. i + 1], j' <- [j - 1 .. j + 1]]
-
-incNeigh :: (Int, Int) -> [[(Int, Bool)]] -> [[(Int, Bool)]]
-incNeigh (i, j) ms = foldr inc ms $ neighs (i, j)
-
-type Eval = State [[(Int, Bool)]]
-
-charge :: Eval ()
-charge = do
-    ms <- get
-    let n = length ms
-    let m = length $ head ms
-    mapM_ (modify . inc) [(i, j) | i <- [1 .. n - 2], j <- [1 .. m - 2]]
-
-flashBfs :: (Int, Int) -> Eval Int
-flashBfs (i, j) = do
-    ms <- get
-    let (x, v) = at ms i j
-    if v
-        then return 0
-        else do
-            if x > 9
-                then do
-                    modify (mark (i, j))
-                    modify (incNeigh (i, j))
-                    (1 +) <$>
-                        foldM
-                            (\acc p -> (acc +) <$> flashBfs p)
-                            0
-                            (neighs (i, j))
-                else return 0
-
-flash :: Eval Int
-flash = do
-    ms <- get
-    let n = length ms
-    let m = length $ head ms
-    foldM
-        (\acc p -> (acc +) <$> flashBfs p)
-        0
-        [(i, j) | i <- [1 .. n - 2], j <- [1 .. m - 2]]
-
-calm :: Eval ()
-calm = do
-    ms <- get
-    let n = length ms
-    let m = length $ head ms
-    mapM_ (modify . reset) [(i, j) | i <- [1 .. n - 2], j <- [1 .. m - 2]]
-
-step :: Eval Int
-step = do
-    charge
-    f <- flash
-    calm
-    return f
-
-flashN :: Int -> Eval Int
-flashN n = foldM (\acc _ -> (acc +) <$> step) 0 [1 .. n]
-
-checkN :: Int -> [[Int]] -> Bool
-checkN n = all (all ((==0) . fst)) . execState (flashN n) .borderInf . mkInput
-
 solution1 :: [[Int]] -> Int
-solution1 = evalState (flashN 100) . borderInf . mkInput
+solution1 m = sum $ map (length . M.elems . M.filter (== 0)) (take 101 $ iterate step $ indexMap m)
 
 solution2 :: [[Int]] -> Int
-solution2 = go 0
-    where go n ms
-            | checkN n ms = n
-            | otherwise = go (n+1) ms
+solution2 m = snd $ head $ filter fst (zipWith (\b n -> (all (==0) $ M.elems b, n)) (iterate step $ indexMap m) [0..])
 
 solve1 :: String -> Int
 solve1 = solution1 . parseContent
