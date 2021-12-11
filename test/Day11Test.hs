@@ -5,15 +5,13 @@ module Day11Test where
 import Day11
 import Test.Framework
 
-sampleInput :: IO String
-sampleInput = readFile "input/day11/sample_input.txt"
+sampleInput :: String
+sampleInput = "5483143223\n2745854711\n5264556173\n6141336146\n6357385478\n4167524645\n2176841721\n6882881134\n4846848554\n5283751526"
 
 test_solve1 :: IO ()
 test_solve1 = do
-    content <- sampleInput
-    assertEqual 0 $ solve1 content
+    assertEqual 1656 $ solve1 sampleInput
 
 test_solve2 :: IO ()
 test_solve2 = do
-    content <- sampleInput
-    assertEqual 0 $ solve2 content
+    assertEqual 195 $ solve2 sampleInput
