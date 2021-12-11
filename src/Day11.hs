@@ -48,10 +48,21 @@ parseLine :: String -> [Int]
 parseLine = map digitToInt
 
 solution1 :: [[Int]] -> Int
-solution1 m = sum $ map (length . M.elems . M.filter (== 0)) (take 101 $ iterate step $ indexMap m)
+solution1 m =
+    sum $
+    map (length . M.elems . M.filter (== 0))
+        (take 101 $ iterate step $ indexMap m)
 
 solution2 :: [[Int]] -> Int
-solution2 m = snd $ head $ filter fst (zipWith (\b n -> (all (==0) $ M.elems b, n)) (iterate step $ indexMap m) [0..])
+solution2 m =
+    snd $
+    head $
+    filter
+        fst
+        (zipWith
+             (\b n -> (all (== 0) $ M.elems b, n))
+             (iterate step $ indexMap m)
+             [0 ..])
 
 solve1 :: String -> Int
 solve1 = solution1 . parseContent

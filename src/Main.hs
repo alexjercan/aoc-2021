@@ -39,6 +39,8 @@ import qualified Day23
 import qualified Day24
 import qualified Day25
 
+import qualified Visual.Day11 as Day11
+
 runDay :: Int -> String -> IO ()
 runDay 1 = Day01.solve
 runDay 2 = Day02.solve
@@ -67,6 +69,10 @@ runDay 24 = Day24.solve
 runDay 25 = Day25.solve
 runDay _ = undefined
 
+visualizeDay :: Int -> String -> IO ()
+visualizeDay 11 = Day11.visualize
+visualizeDay _ = undefined
+
 readDay :: Int -> IO String
 readDay day = do
     readFile $ "input/day" ++ printf "%02d" day ++ ".input"
@@ -79,6 +85,11 @@ readDayFromURL day session = do
     }
     return $ B8.unpack $ responseBody response
 
+mainOffline :: Int ->  IO ()
+mainOffline day = do
+    content <- readDay day
+    runDay day content
+
 mainOnline :: Int -> IO ()
 mainOnline day = do
     loadFile defaultConfig >>= load True
@@ -86,27 +97,29 @@ mainOnline day = do
     content <- readDayFromURL day session
     runDay day content
 
-mainOffline ::Int ->  IO ()
-mainOffline day = do
+mainVisualize :: Int -> IO ()
+mainVisualize day = do
     content <- readDay day
-    runDay day content
+    visualizeDay day content
 
 main :: IO ()
 main = do
     args <- getArgs
     (method, day) <- parse args
     case method of
-        0 -> mainOnline day
-        1 -> mainOffline day
+        0 -> mainOffline day
+        1 -> mainOnline day
+        2 -> mainVisualize day
         _ -> undefined
 
 parse :: [[Char]] -> IO (Int, Int)
 parse ["-h"]            = usage   >> exitSuccess
 parse ["-v"]            = version >> exitSuccess
 parse []                = read <$> getContents
-parse [day]             = return (1, read day)
-parse ["--on", day]     = return (0, read day)
-parse _                 = usage   >> exitWith (ExitFailure 1)
+parse [day]             = return (0, read day)
+parse ["--on", day]     = return (1, read day)
+parse ["--vis", day]    = return (2, read day)
+parse _                 = usage >> exitWith (ExitFailure 1)
 
 usage :: IO ()
 usage   = putStrLn "Usage: aoc2021 [-vh] [--on] day"
