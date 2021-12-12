@@ -81,7 +81,7 @@ readDayFromURL :: (MonadThrow m, MonadIO m) => Int -> String -> m String
 readDayFromURL day session = do
     initReq <- parseRequest $ "https://adventofcode.com/" ++ "2021/day/" ++ show day ++ "/input"
     response <- httpBS initReq {
-          requestHeaders = [(hCookie, B8.pack $ "session=" ++ session)]
+          requestHeaders = [(hCookie, B8.pack session)]
     }
     return $ B8.unpack $ responseBody response
 

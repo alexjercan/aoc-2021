@@ -2,8 +2,8 @@
 
 cd "$(dirname "$0")"
 
-if [ -r .cookie ]; then
-  . .cookie
+if [ -r .env ]; then
+  . .env
 fi
 
 export TZ=EST
@@ -13,7 +13,7 @@ thisday="$(date +%d)"
 
 mkdir -p input
 
-year=2021
+year=$1
 for day in {1..25}; do
   if [ "$thisyear" -ne "$year" -o "$thismonth" -ne 12 -o "$day" -gt "$thisday" ]; then
     exit 0
