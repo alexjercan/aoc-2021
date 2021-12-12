@@ -13,7 +13,7 @@ thisday="$(date +%d)"
 
 mkdir -p input
 
-year=$1
+year=2021
 for day in {1..25}; do
   if [ "$thisyear" -ne "$year" -o "$thismonth" -ne 12 -o "$day" -gt "$thisday" ]; then
     exit 0
