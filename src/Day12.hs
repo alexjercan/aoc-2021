@@ -25,15 +25,15 @@ isLowerS = all isLower
 
 type Eval = State [String]
 
-dfs :: String -> [[String]] -> [String] -> M.Map String [String] -> [[String]]
-dfs x res vs m
-    | x == "end" = (x : vs) : res
+dfs :: String -> [String] -> M.Map String [String] -> [[String]]
+dfs x vs m
+    | x == "end" = [x : vs]
     | isLowerS x =
         concatMap
-            (\x' -> dfs x' res (x : vs) m)
+            (\x' -> dfs x' (x : vs) m)
             (filter (`notElem` vs) (m M.! x))
     | otherwise =
-        concatMap (\x' -> dfs x' res vs m) (filter (`notElem` vs) (m M.! x))
+        concatMap (\x' -> dfs x' vs m) (filter (`notElem` vs) (m M.! x))
 
 allUnique :: [String] -> Bool
 allUnique = all ((== 1) . length) . group . sort . filter isLowerS
@@ -44,21 +44,21 @@ myFilter vs x
     | x `notElem` vs || allUnique vs = True
     | otherwise = False
 
-dfs2 :: String -> [[String]] -> [String] -> M.Map String [String] -> [[String]]
-dfs2 x res vs m
-    | x == "end" = (x : vs) : res
+dfs2 :: String -> [String] -> M.Map String [String] -> [[String]]
+dfs2 x vs m
+    | x == "end" = [x : vs]
     | isLowerS x =
         concatMap
-            (\x' -> dfs2 x' res (x : vs) m)
+            (\x' -> dfs2 x' (x : vs) m)
             (filter (myFilter (x : vs)) (m M.! x))
     | otherwise =
-        concatMap (\x' -> dfs2 x' res vs m) (filter (myFilter vs) (m M.! x))
+        concatMap (\x' -> dfs2 x' vs m) (filter (myFilter vs) (m M.! x))
 
 solution1 :: [(String, String)] -> Int
-solution1 = length . dfs "start" [] [] . mkGraph
+solution1 = length . dfs "start" [] . mkGraph
 
 solution2 :: [(String, String)] -> Int
-solution2 = length . dfs2 "start" [] [] . mkGraph
+solution2 = length . dfs2 "start" [] . mkGraph
 
 solve1 :: String -> Int
 solve1 = solution1 . parseContent
