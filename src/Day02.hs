@@ -2,6 +2,7 @@ module Day02 where
 
 import Control.Monad.State
     ( execState, MonadState(put, get), State )
+import Control.Arrow ((&&&))
 
 parseCommand :: String -> (String, Int)
 parseCommand c = (head cs, read $ cs !! 1)
@@ -47,8 +48,6 @@ solve1 content = solution moveM1 $ lines content
 solve2 :: String -> Int
 solve2 content = solution moveM2 $ lines content
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
 

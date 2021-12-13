@@ -2,6 +2,7 @@ module Day06 where
 import Data.List.Split (splitOn)
 import qualified Data.Map as M
 import Control.Monad.State
+import Control.Arrow ((&&&))
 
 parseContent :: String -> [Int]
 parseContent = map read . splitOn ","
@@ -32,8 +33,6 @@ solve1 = solution 80 . parseContent
 solve2 :: String -> Int
 solve2 = solution 256 . parseContent
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
 

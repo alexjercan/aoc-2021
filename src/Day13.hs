@@ -39,11 +39,9 @@ solve1 :: String -> Int
 solve1 content = solution1 b (head fs)
     where (b, fs) = parseContent content
 
-solve2' :: String -> [(Int, Int)]
-solve2' = uncurry solution2 . parseContent
+solve2 :: String -> String
+solve2 = pprint . uncurry solution2 . parseContent
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    putStrLn $ pprint $ solve2' content
+solve :: String -> String
+solve content = show (solve1 content) ++ "\n" ++  solve2 content
 

@@ -4,6 +4,7 @@ module Day10 where
 
 import Control.Monad.State
 import Data.List (sort)
+import Control.Arrow ((&&&))
 
 parseContent :: String -> [String]
 parseContent = lines
@@ -65,8 +66,6 @@ solve1 = solution1 . parseContent
 solve2 :: String -> Int
 solve2 = solution2 . parseContent
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
 

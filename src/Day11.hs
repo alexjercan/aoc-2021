@@ -3,6 +3,7 @@ module Day11 where
 import Data.Char (digitToInt)
 import qualified Data.Map as M
 import Data.Maybe (mapMaybe)
+import Control.Arrow ((&&&))
 
 type Board = M.Map (Int, Int) Int
 
@@ -70,7 +71,6 @@ solve1 = solution1 . parseContent
 solve2 :: String -> Int
 solve2 = solution2 . parseContent
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
+

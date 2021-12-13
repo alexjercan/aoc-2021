@@ -1,13 +1,15 @@
 module Day25 where
 
-solve1 :: String -> Int
-solve1 content = undefined
+type Input = String
 
-solve2 :: String -> Int
-solve2 content = undefined
+parseContent :: String -> Input
+parseContent = id
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve1 :: Input -> ()
+solve1 = const ()
 
+solve2 :: Input -> ()
+solve2 = const ()
+
+solve :: String -> String
+solve = id

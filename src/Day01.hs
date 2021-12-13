@@ -2,6 +2,7 @@ module Day01 where
 
 import Control.Applicative ( ZipList(ZipList, getZipList) )
 import Data.List ( tails )
+import Control.Arrow ((&&&))
 
 diff :: [Int] -> [Int]
 diff xs = zipWith (-) (tail xs) xs
@@ -24,8 +25,6 @@ solve1 content = solution1 $ map read $ lines content
 solve2 :: String -> Int
 solve2 content = solution2 $ map read $ lines content
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
 

@@ -3,6 +3,7 @@ module Day03 where
 import Data.List ( maximumBy, minimumBy, group, sort, transpose )
 import Data.Function ( on )
 import Data.Char ( digitToInt )
+import Control.Arrow ((&&&))
 
 mostCommon :: Ord a => [a] -> a
 mostCommon = head . maximumBy (compare `on` length) . group . sort
@@ -35,8 +36,6 @@ solve1 content = solution1 $ lines content
 solve2 :: String -> Int
 solve2 content = solution2 $ lines content
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
 

@@ -1,18 +1,5 @@
 module Main where
 
-import Text.Printf (printf)
-import System.Environment ( getArgs, getEnv )
-import System.Exit ( exitSuccess, exitWith, ExitCode(ExitFailure) )
-import Control.Monad.Catch ( MonadThrow )
-import Control.Monad.IO.Class ( MonadIO )
-import Network.HTTP.Conduit
-    ( parseRequest, Request(requestHeaders), Response(responseBody) )
-import Network.HTTP.Simple ( httpBS )
-import Network.HTTP.Types ( hCookie )
-import Configuration.Dotenv ( load, loadFile, defaultConfig )
-
-import qualified Data.ByteString.Char8 as B8
-
 import qualified Day01
 import qualified Day02
 import qualified Day03
@@ -39,91 +26,50 @@ import qualified Day23
 import qualified Day24
 import qualified Day25
 
-import qualified Visual.Day11 as Day11
+import System.Environment (getArgs)
+import System.Exit (exitSuccess, exitWith, ExitCode (ExitFailure))
 
-runDay :: Int -> String -> IO ()
-runDay 1 = Day01.solve
-runDay 2 = Day02.solve
-runDay 3 = Day03.solve
-runDay 4 = Day04.solve
-runDay 5 = Day05.solve
-runDay 6 = Day06.solve
-runDay 7 = Day07.solve
-runDay 8 = Day08.solve
-runDay 9 = Day09.solve
-runDay 10 = Day10.solve
-runDay 11 = Day11.solve
-runDay 12 = Day12.solve
-runDay 13 = Day13.solve
-runDay 14 = Day14.solve
-runDay 15 = Day15.solve
-runDay 16 = Day16.solve
-runDay 17 = Day17.solve
-runDay 18 = Day18.solve
-runDay 19 = Day19.solve
-runDay 20 = Day20.solve
-runDay 21 = Day21.solve
-runDay 22 = Day22.solve
-runDay 23 = Day23.solve
-runDay 24 = Day24.solve
-runDay 25 = Day25.solve
-runDay _ = undefined
-
-visualizeDay :: Int -> String -> IO ()
-visualizeDay 11 = Day11.visualize
-visualizeDay _ = undefined
-
-readDay :: Int -> IO String
-readDay day = do
-    readFile $ "input/day" ++ printf "%02d" day ++ ".input"
-
-readDayFromURL :: (MonadThrow m, MonadIO m) => Int -> String -> m String
-readDayFromURL day session = do
-    initReq <- parseRequest $ "https://adventofcode.com/" ++ "2021/day/" ++ show day ++ "/input"
-    response <- httpBS initReq {
-          requestHeaders = [(hCookie, B8.pack session)]
-    }
-    return $ B8.unpack $ responseBody response
-
-mainOffline :: Int ->  IO ()
-mainOffline day = do
-    content <- readDay day
-    runDay day content
-
-mainOnline :: Int -> IO ()
-mainOnline day = do
-    loadFile defaultConfig >>= load True
-    session <- getEnv "AOC_SESSION"
-    content <- readDayFromURL day session
-    runDay day content
-
-mainVisualize :: Int -> IO ()
-mainVisualize day = do
-    content <- readDay day
-    visualizeDay day content
+solveDay :: Int -> String -> String
+solveDay 1 = Day01.solve
+solveDay 2 = Day02.solve
+solveDay 3 = Day03.solve
+solveDay 4 = Day04.solve
+solveDay 5 = Day05.solve
+solveDay 6 = Day06.solve
+solveDay 7 = Day07.solve
+solveDay 8 = Day08.solve
+solveDay 9 = Day09.solve
+solveDay 10 = Day10.solve
+solveDay 11 = Day11.solve
+solveDay 12 = Day12.solve
+solveDay 13 = Day13.solve
+solveDay 14 = Day14.solve
+solveDay 15 = Day15.solve
+solveDay 16 = Day16.solve
+solveDay 17 = Day17.solve
+solveDay 18 = Day18.solve
+solveDay 19 = Day19.solve
+solveDay 20 = Day20.solve
+solveDay 21 = Day21.solve
+solveDay 22 = Day22.solve
+solveDay 23 = Day23.solve
+solveDay 24 = Day24.solve
+solveDay 25 = Day25.solve
+solveDay _ = undefined
 
 main :: IO ()
-main = do
-    args <- getArgs
-    (method, day) <- parse args
-    case method of
-        0 -> mainOffline day
-        1 -> mainOnline day
-        2 -> mainVisualize day
-        _ -> undefined
+main = getArgs >>= parse >>= interact . solveDay
 
-parse :: [[Char]] -> IO (Int, Int)
-parse ["-h"]            = usage   >> exitSuccess
-parse ["-v"]            = version >> exitSuccess
-parse []                = read <$> getContents
-parse [day]             = return (0, read day)
-parse ["--on", day]     = return (1, read day)
-parse ["--vis", day]    = return (2, read day)
-parse _                 = usage >> exitWith (ExitFailure 1)
+parse :: [[Char]] -> IO Int
+parse ["-h"] = usage >> exitSuccess
+parse ["-v"] = version >> exitSuccess
+parse []     = read <$> getContents
+parse [day]  = return $ read day
+parse _      = usage >> exitWith (ExitFailure 1)
 
 usage :: IO ()
-usage   = putStrLn "Usage: aoc2021 [-vh] [--on] day"
+usage = putStrLn "Usage: aoc2015 [-vh] day"
 
 version :: IO ()
-version = putStrLn "Aoc2021"
+version = putStrLn "Aoc2015"
 

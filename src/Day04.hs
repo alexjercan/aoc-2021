@@ -5,6 +5,7 @@ import Data.List ( maximumBy, minimumBy, (\\), inits, transpose )
 import Data.Maybe ( listToMaybe, mapMaybe )
 import Data.List.Split ( splitOn )
 import Data.Function (on)
+import Control.Arrow ((&&&))
 
 orMasks :: [[Bool]] -> [[Bool]] -> [[Bool]]
 orMasks = zipWith (zipWith (||))
@@ -61,8 +62,6 @@ parseBingos xs = parseBingo ys : parseBingos ys'
     where ys = takeWhile (not . all isSpace) (tail xs)
           ys' = dropWhile (not . all isSpace) (tail xs)
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
 

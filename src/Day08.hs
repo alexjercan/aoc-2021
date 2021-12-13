@@ -3,6 +3,7 @@ module Day08 where
 import Data.List (sort)
 import Data.List.Split (splitOn)
 import qualified Data.Map as M
+import Control.Arrow ((&&&))
 
 parseContent :: String -> [([String], [String])]
 parseContent = map parseDisplay . lines
@@ -77,7 +78,6 @@ solve1 = solution1 . map snd . parseContent
 solve2 :: String -> Int
 solve2 = solution2 . parseContent
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
+

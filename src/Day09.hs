@@ -3,6 +3,7 @@ module Day09 where
 import Control.Monad.State
 import Data.Char
 import Data.List (sortBy)
+import Control.Arrow ((&&&))
 
 parseContent :: String -> [[Int]]
 parseContent = map parseLine . lines
@@ -78,8 +79,6 @@ solve1 = solution1 . parseContent
 solve2 :: String -> Int
 solve2 = solution2 . parseContent
 
-solve :: String -> IO ()
-solve content = do
-    print $ solve1 content
-    print $ solve2 content
+solve :: String -> String
+solve = show . (solve1 &&& solve2)
 
