@@ -41,16 +41,16 @@ parseContent = either (error . show) id . parse contentP
 
 type Eval = State (M.Map (Char, Char) Int, M.Map Char Int)
 
+insert :: ((Char, Char), Int) -> Char -> [((Char, Char), Int)]
+insert ((a, b), v) c = [((a, c), v), ((c, b), v)]
+
 countM :: M.Map (Char, Char) Char -> Eval ()
 countM m = do
     (s, f) <- get
-    let cs = map (m M.!) $ M.keys s
-    let xs1 = zip (zip (map fst (M.keys s)) cs) (M.elems s)
-    let xs2 = zip (zip cs (map snd (M.keys s))) (M.elems s)
-    let xs = xs1 ++ xs2
-    let cn = counterW xs
-    let cf = counterW (zip cs (M.elems s))
-    put (cn, M.unionWith (+) f cf)
+    let mids = map (m M.!) $ M.keys s
+    let s' = counterW $ concat $ zipWith insert (M.toList s) mids
+    let f' = counterW (zip mids (M.elems s))
+    put (s', M.unionWith (+) f f')
 
 solution :: Int -> Input -> Int
 solution n (xs, m) = ((-) <$> maximum <*> minimum) freq
