@@ -32,4 +32,4 @@ test_solve1 :: IO ()
 test_solve1 = assertEqual 1588 $ solve1 sampleInput1
 
 test_solve2 :: IO ()
-test_solve2 = assertFailure "Not Implemented"
+test_solve2 = assertEqual 2188189693529 $ solve2 sampleInput1
