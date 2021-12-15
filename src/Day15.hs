@@ -21,9 +21,6 @@ type Input = [[Int]]
 parseContent :: String -> Input
 parseContent = map (map digitToInt) . lines
 
-sampleInput =
-    "1163751742\n1381373672\n2136511328\n3694931569\n7463417111\n1319128137\n1359912421\n3125421639\n1293138521\n2311944581\n"
-
 wrap :: (Eq p, Num p) => p -> p
 wrap x
     | x == 9 = 1
@@ -123,7 +120,7 @@ solve1 :: [[Int]] -> Int
 solve1 = solution
 
 solve2 :: [[Int]] -> Int
-solve2 = solution . replicateMat 1
+solve2 = solution . replicateMat 5
 
 solve :: String -> String
 solve = show . (solve1 &&& solve2) . parseContent
