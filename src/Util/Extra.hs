@@ -1,10 +1,7 @@
-module Util where
+module Util.Extra where
 
-import Data.Char (isSpace, digitToInt)
-import Text.Parsec (Parsec, many1, digit, letter, char, upper, space, string, oneOf)
-import Text.Parsec.Error (ParseError)
-import qualified Text.Parsec as Parsec
 import qualified Data.Map as M
+import Data.Char (isSpace)
 import Data.List (transpose)
 
 rstrip :: [Char] -> [Char]

@@ -12,7 +12,7 @@ import Util.Parser
     , upperP
     , upperSP
     )
-import Util ( counter, counterW, mkPairs )
+import Util.Extra ( counter, counterW, mkPairs )
 
 type Input = (String, M.Map (Char, Char) Char)
 
