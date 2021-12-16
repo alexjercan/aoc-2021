@@ -4,17 +4,15 @@ import Control.Applicative (Alternative(many))
 import Control.Arrow (Arrow((&&&)))
 import Control.Monad.State (MonadState(get, put), State, execState, replicateM)
 import qualified Data.Map as M
-import Util
+import Util.Parser
     ( Parser
-    , counter
-    , counterW
-    , mkPairs
     , parse
     , spaceP
     , stringP
     , upperP
     , upperSP
     )
+import Util ( counter, counterW, mkPairs )
 
 type Input = (String, M.Map (Char, Char) Char)
 

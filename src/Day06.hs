@@ -1,4 +1,5 @@
 module Day06 where
+
 import Data.List.Split (splitOn)
 import qualified Data.Map as M
 import Control.Monad.State

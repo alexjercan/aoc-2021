@@ -1,51 +1,9 @@
 module Day16 where
 
 import Control.Arrow ( Arrow((&&&)) )
-import Util (Parser, parse)
-import Data.Char (digitToInt)
-import Text.Parsec (oneOf)
-
-upto :: Int -> Parser a -> Parser [a]
-upto 0 p = return []
-upto n p = (:) <$> p <*> upto (n-1) p
-
-hexToBin :: Char -> String
-hexToBin '0' = "0000"
-hexToBin '1' = "0001"
-hexToBin '2' = "0010"
-hexToBin '3' = "0011"
-hexToBin '4' = "0100"
-hexToBin '5' = "0101"
-hexToBin '6' = "0110"
-hexToBin '7' = "0111"
-hexToBin '8' = "1000"
-hexToBin '9' = "1001"
-hexToBin 'A' = "1010"
-hexToBin 'B' = "1011"
-hexToBin 'C' = "1100"
-hexToBin 'D' = "1101"
-hexToBin 'E' = "1110"
-hexToBin 'F' = "1111"
-hexToBin _   = ""
-
-binToInt :: String -> Int
-binToInt = foldl (\acc x -> acc * 2 + digitToInt x) 0
-
-bitP' :: Parser Char
-bitP' = oneOf "01"
-
-bitP :: Parser Int
-bitP = digitToInt <$> bitP'
-
-bit2P :: Parser Int
-bit2P = binToInt <$> upto 2 bitP'
-
-bit3P :: Parser Int
-bit3P = binToInt <$> upto 3 bitP'
-
-bit4P :: Parser Int
-bit4P = binToInt <$> upto 4 bitP'
-
+import Util.Parser
+    ( Parser, parse, upto, bitP', bitP, bit3P, bit4P )
+import Util.Binary ( hexToBin, binToInt )
 
 data Op = Sum | Product | Minimum | Maximum | GreaterThan | LessThan | EqualTo deriving Show
 
@@ -133,6 +91,7 @@ eval (Operator _ LessThan _ [p1, p2]) = if eval p1 < eval p2 then 1 else 0
 eval (Operator _ EqualTo _ [p1, p2]) = if eval p1 == eval p2 then 1 else 0
 eval Operator {} = undefined
 
+solve2 :: Packet -> Int
 solve2 = eval
 
 solve :: String -> String
