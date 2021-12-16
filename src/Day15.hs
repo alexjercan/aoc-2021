@@ -3,7 +3,6 @@ module Day15 where
 import Control.Arrow ((&&&))
 import Data.Char (digitToInt)
 import qualified Data.Map as M
-import qualified Data.PSQueue as P
 import Util.Search (dijkstra)
 
 type Input = [[Int]]
@@ -28,9 +27,9 @@ replicateMat n = go n
 
 getNeighbors :: Int -> Int -> (Int, Int) -> [(Int, Int)]
 getNeighbors n m (i, j) =
-    filter (isValid n m) [(i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)]
+    filter isValid [(i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)]
   where
-    isValid n m (i, j) = 0 <= i && i < n && 0 <= j && j < m
+    isValid (x, y) = 0 <= x && x < n && 0 <= y && y < m
 
 cost :: M.Map (Int, Int) Int -> (Int, Int) -> Int
 cost = (M.!)
@@ -40,7 +39,7 @@ isTarget = (==)
 
 answer ::
        (Int, Int) -> M.Map (Int, Int) Int -> M.Map (Int, Int) (Int, Int) -> Int
-answer p dist prev = dist M.! p
+answer p dist _ = dist M.! p
 
 solution :: [[Int]] -> Int
 solution ms =
@@ -62,7 +61,7 @@ solve1 :: [[Int]] -> Int
 solve1 = solution
 
 solve2 :: [[Int]] -> Int
-solve2 = solution . replicateMat 5
+solve2 = solution . replicateMat (5 :: Int)
 
 solve :: String -> String
 solve = show . (solve1 &&& solve2) . parseContent
