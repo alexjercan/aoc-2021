@@ -6,7 +6,7 @@ import Day17
 import Test.Framework
 
 sampleInput1 :: Input
-sampleInput1 = mempty
+sampleInput1 = TargetRange 0 0 0 0
 
 sampleOutput1 :: ()
 sampleOutput1 = ()

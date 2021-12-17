@@ -6,13 +6,12 @@ import Day15
 import Test.Framework
 
 sampleInput1 :: Input
-sampleInput1 = mempty
-
-sampleOutput1 :: ()
-sampleOutput1 = ()
+sampleInput1 = [[2, 3]]
 
 test_solve1 :: IO ()
-test_solve1 = assertFailure "Not Implemented"
+test_solve1 = do
+    assertEqual 3 $ solve1 sampleInput1
 
 test_solve2 :: IO ()
-test_solve2 = assertFailure "Not Implemented"
+test_solve2 = do
+    assertEqual 58 $ solve2 sampleInput1
