@@ -18,8 +18,8 @@ import {-@ HTF_TESTS @-} Day13Test
 import {-@ HTF_TESTS @-} Day14Test
 import {-@ HTF_TESTS @-} Day15Test
 import {-@ HTF_TESTS @-} Day16Test
-{-
 import {-@ HTF_TESTS @-} Day17Test
+{-
 import {-@ HTF_TESTS @-} Day18Test
 import {-@ HTF_TESTS @-} Day19Test
 import {-@ HTF_TESTS @-} Day20Test
