@@ -62,11 +62,11 @@ packetP = do
     t <- bit3P
     case t of
       4 -> Literal v <$> literalPacketContentP
-      t -> do
+      _ -> do
             s <- packetSizeP
             ps <- case s of
-              (Length s) -> lento s packetP
-              (Count s) -> replicateM s packetP
+              (Length s') -> lento s' packetP
+              (Count s') -> replicateM s' packetP
             return $ Operator v (toOp t) s ps
 
 type Input = Packet
