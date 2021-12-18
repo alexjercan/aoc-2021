@@ -4,6 +4,7 @@ import Text.Parsec (Parsec, ParseError, many1, digit, upper, char, string, space
 import qualified Text.Parsec as Parsec
 import Data.Char (digitToInt)
 import Util.Binary (binToInt)
+import Control.Monad (replicateM)
 
 type Parser = Parsec String ()
 
@@ -41,10 +42,6 @@ spaceP = space
 manyP :: Parser a -> Parser [a]
 manyP = many1
 
-upto :: Int -> Parser a -> Parser [a]
-upto 0 _ = return []
-upto n p = (:) <$> p <*> upto (n-1) p
-
 bitP' :: Parser Char
 bitP' = oneOf "01"
 
@@ -52,13 +49,13 @@ bitP :: Parser Int
 bitP = digitToInt <$> bitP'
 
 bit2P :: Parser Int
-bit2P = binToInt <$> upto 2 bitP'
+bit2P = binToInt <$> replicateM 2 bitP'
 
 bit3P :: Parser Int
-bit3P = binToInt <$> upto 3 bitP'
+bit3P = binToInt <$> replicateM 3 bitP'
 
 bit4P :: Parser Int
-bit4P = binToInt <$> upto 4 bitP'
+bit4P = binToInt <$> replicateM 4 bitP'
 
 
 

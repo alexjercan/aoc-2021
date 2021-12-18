@@ -2,8 +2,9 @@ module Day16 where
 
 import Control.Arrow ( Arrow((&&&)) )
 import Util.Parser
-    ( Parser, parse, upto, bitP', bitP, bit3P, bit4P )
+    ( Parser, parse, bitP', bitP, bit3P, bit4P )
 import Util.Binary ( hexToBin, binToInt )
+import Control.Monad (replicateM)
 
 data Op = Sum | Product | Minimum | Maximum | GreaterThan | LessThan | EqualTo deriving Show
 
@@ -45,8 +46,8 @@ packetSizeP :: Parser PacketSize
 packetSizeP = do
     i <- bitP
     case i of
-      0 -> Length . binToInt <$> upto 15 bitP'
-      _ -> Count . binToInt <$> upto 11 bitP'
+      0 -> Length . binToInt <$> replicateM 15 bitP'
+      _ -> Count . binToInt <$> replicateM 11 bitP'
 
 literalPacketContentP :: Parser [Int]
 literalPacketContentP = do
@@ -65,7 +66,7 @@ packetP = do
             s <- packetSizeP
             ps <- case s of
               (Length s) -> lento s packetP
-              (Count s) -> upto s packetP
+              (Count s) -> replicateM s packetP
             return $ Operator v (toOp t) s ps
 
 type Input = Packet
