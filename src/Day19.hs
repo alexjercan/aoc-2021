@@ -13,7 +13,7 @@ import Control.Monad.State
 import Data.Function (on)
 
 type Point3DI = Point3D Int
-data Scanner = Scanner (Maybe Point3DI) [Point3DI] deriving Show
+data Scanner = Scanner (Maybe Point3DI) [Point3DI] deriving (Show, Ord, Eq)
 
 pos :: Scanner -> Maybe Point3DI
 pos (Scanner p _) = p
@@ -77,18 +77,21 @@ solutionM = do
         put $ vs ++ ns'
         solutionM
 
+solution :: [Scanner] -> [Scanner]
 solution = execState solutionM . mkScanners
 
 computeP :: [Scanner] -> [Point3DI]
 computeP ((Scanner (Just p) ps):rs) = map (+p) ps ++ computeP rs
 computeP _ = []
 
+solve1 :: [Scanner] -> Int
 solve1 = length . nub . computeP . solution
 
-computeP' ((Scanner _ ps):rs) = ps ++ computeP' rs
-computeP' _ = []
+computeM ss = maximum [dist (s1, s2) | s1 <- ss, s2 <- ss, s1 /= s2]
+    where dist (Scanner (Just p1) _, Scanner (Just p2) _) = sum $ abs (p1 - p2)
+          dist _ = 0
 
-solve2 = length . computeP'
+solve2 = computeM . solution
 
 solve :: String -> String
 solve = show . (solve1 &&& solve2) . parseContent
