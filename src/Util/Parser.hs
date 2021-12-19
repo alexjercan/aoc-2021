@@ -1,6 +1,6 @@
 module Util.Parser where
 
-import Text.Parsec (Parsec, ParseError, many1, digit, upper, char, string, space, oneOf, optionMaybe)
+import Text.Parsec (Parsec, ParseError, many1, digit, upper, char, string, space, oneOf, optionMaybe, eof)
 import qualified Text.Parsec as Parsec
 import Data.Char (digitToInt)
 import Util.Binary (binToInt)
@@ -38,6 +38,12 @@ upperP = upper
 
 spaceP :: Parser Char
 spaceP = space
+
+spaceP' :: Parser ()
+spaceP' = () <$ space
+
+eofP :: Parser ()
+eofP = eof
 
 manyP :: Parser a -> Parser [a]
 manyP = many1
