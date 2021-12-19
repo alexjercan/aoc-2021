@@ -6,10 +6,11 @@ import Control.Applicative (Alternative((<|>)))
 import Data.List.Split (splitOn)
 import Util.Extra (subsets, counter)
 import Util.Transform
-import Data.List (permutations)
+import Data.List (permutations, maximumBy, nub)
 import Data.Maybe (isJust, fromJust, isNothing)
 import qualified Data.Map as M
 import Control.Monad.State
+import Data.Function (on)
 
 type Point3DI = Point3D Int
 data Scanner = Scanner (Maybe Point3DI) [Point3DI] deriving Show
@@ -48,10 +49,13 @@ mkTransformation s = map (tScanP s) transformations
     where tScanP (Scanner p ps) t = Scanner p (map t ps)
 
 overlap :: Scanner -> Scanner -> Scanner
-overlap (Scanner (Just p) xs) (Scanner Nothing ys) = Scanner (if M.null counts then Nothing else q) ys
-    where diffs = zipWith (-) xs ys
-          counts = M.filter (>=12) $ counter diffs
-          q = Just $ (+p) $ head $ M.keys counts
+overlap (Scanner (Just p) xs) (Scanner Nothing ys) = Scanner (if isO then q else Nothing) ys
+    where diffs = sequenceA $ concatMap (zipWith (-) xs . repeat) ys
+          counts = counter <$> diffs
+          counts' = M.toList <$> counts
+          mx = maximumBy (compare `on` snd) <$> counts'
+          isO = all (>=12) $ snd <$> mx
+          q = Just $ (+p) $ fst <$> mx
 overlap s1 s2 = s2
 
 overlap' :: [Scanner] -> Scanner -> Scanner
@@ -75,9 +79,16 @@ solutionM = do
 
 solution = execState solutionM . mkScanners
 
-solve1 = solution
+computeP :: [Scanner] -> [Point3DI]
+computeP ((Scanner (Just p) ps):rs) = map (+p) ps ++ computeP rs
+computeP _ = []
 
-solve2 = length
+solve1 = length . nub . computeP . solution
+
+computeP' ((Scanner _ ps):rs) = ps ++ computeP' rs
+computeP' _ = []
+
+solve2 = length . computeP'
 
 solve :: String -> String
 solve = show . (solve1 &&& solve2) . parseContent

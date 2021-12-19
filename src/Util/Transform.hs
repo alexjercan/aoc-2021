@@ -9,6 +9,9 @@ instance Applicative Point3D where
     pure a = Point3D a a a
     (<*>) (Point3D fx fy fz) (Point3D x y z) = Point3D (fx x) (fy y) (fz z)
 
+instance Foldable Point3D where
+    foldr f acc (Point3D x y z) = f x $ f y $ f z acc
+
 instance Num a => Num (Point3D a) where
   (+) p1 p2 = (+) <$> p1 <*> p2
   (*) p1 p2 = (*) <$> p1 <*> p2
