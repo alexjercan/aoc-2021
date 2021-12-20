@@ -24,3 +24,5 @@ hexToBin _   = ""
 binToInt :: String -> Int
 binToInt = foldl (\acc x -> acc * 2 + digitToInt x) 0
 
+biniToInt :: [Int] -> Int
+biniToInt = foldl (\acc x -> acc * 2 + x) 0
