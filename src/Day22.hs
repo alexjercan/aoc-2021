@@ -2,11 +2,9 @@ module Day22 where
 
 import Control.Applicative ((<|>))
 import Control.Arrow (Arrow((&&&)))
-import qualified Data.Array as A
-import GHC.Arr (listArray)
+import Data.Maybe (catMaybes)
 import Text.Parsec (anyChar, char, space, string)
-import Util.Parser ( charP, integerP, parseList, Parser )
-import Data.Maybe ( catMaybes )
+import Util.Parser (Parser, charP, integerP, parseList)
 
 data Cuboid =
     Cuboid (Integer, Integer) (Integer, Integer) (Integer, Integer)
@@ -28,7 +26,7 @@ status :: Line -> Status
 status (Line s _) = s
 
 isOn :: Line -> Bool
-isOn = (==On) . status
+isOn = (== On) . status
 
 type Bounds = ((Integer, Integer, Integer), (Integer, Integer, Integer))
 
@@ -58,34 +56,6 @@ type Input = [Line]
 
 parseContent :: String -> Input
 parseContent = parseList listP . lines
-
-bounds :: [Cuboid] -> Bounds
-bounds = bounds' ((0, 0, 0), (0, 0, 0))
-  where
-    bounds' m [] = m
-    bounds' ((xm, ym, zm), (xM, yM, zM)) (Cuboid (xs, xe) (ys, ye) (zs, ze):cs) =
-        bounds'
-            ( (min xm xs, min ym ys, min zm zs)
-            , (max xM xe, max yM ye, max zM ze))
-            cs
-
-indices :: Bounds -> Cuboid -> [(Integer, Integer, Integer)]
-indices ((xm, ym, zm), (xM, yM, zM)) (Cuboid (xs, xe) (ys, ye) (zs, ze)) =
-    [ (x, y, z)
-    | x <- [max xm xs .. min xM (xe - 1)]
-    , y <- [max ym ys .. min yM (ye - 1)]
-    , z <- [max zm zs .. min zM (ze - 1)]
-    ]
-
-emptyA :: Bounds -> A.Array (Integer, Integer, Integer) Integer
-emptyA bs = listArray bs (repeat 0)
-
-step :: A.Array (Integer, Integer, Integer) Integer -> Line -> A.Array (Integer, Integer, Integer) Integer
-step a (Line On c) = a A.// zip (indices (A.bounds a) c) (repeat 1)
-step a (Line Off c) = a A.// zip (indices (A.bounds a) c) (repeat 0)
-
-solve1 :: [Line] -> Integer
-solve1 = sum . foldl step (emptyA ((-50, -50, -50), (50, 50, 50)))
 
 segmentOverlap :: (Integer, Integer) -> (Integer, Integer) -> Bool
 segmentOverlap (xs1, xe1) (xs2, xe2) = xs1 <= xe2 && xs2 <= xe1
@@ -125,9 +95,9 @@ intersectBack c1@(Cuboid x1 y1 (zs1, ze1)) (Cuboid _ _ (_, ze2))
     | otherwise = (Nothing, c1)
 
 intersect :: Cuboid -> Cuboid -> [Cuboid]
-intersect c1 c2 = do
+intersect c1 c2 =
     if cuboidOverlap c1 c2
-       then do
+        then do
             let (left, r1) = intersectLeft c1 c2
             let (right, r2) = intersectRight r1 c2
             let (up, r3) = intersectUp r2 c2
@@ -137,17 +107,35 @@ intersect c1 c2 = do
             catMaybes [left, right, up, down, front, back]
         else [c1]
 
-intersect' :: Line -> Line -> [Line]
-intersect' (Line s1 c1) (Line _ c2) = Line s1 <$> intersect c1 c2
+intersectL :: Line -> Line -> [Line]
+intersectL (Line s1 c1) (Line _ c2) = Line s1 <$> intersect c1 c2
 
-step' :: Line -> [Line] -> [Line]
-step' x xs = filter isOn (x : concatMap (`intersect'` x) xs)
+step :: Line -> [Line] -> [Line]
+step x xs = filter isOn (x : concatMap (`intersectL` x) xs)
 
-size' :: Line -> Integer
-size' (Line _ (Cuboid (xs, xe) (ys, ye) (zs, ze))) = (xe - xs) * (ye - ys) * (ze - zs)
+size :: Line -> Integer
+size (Line _ (Cuboid (xs, xe) (ys, ye) (zs, ze))) =
+    (xe - xs) * (ye - ys) * (ze - zs)
+
+isInBounds :: Line -> Bool
+isInBounds = cuboidOverlap (Cuboid (-50, 50) (-50, 50) (-50, 50)) . cuboid
+
+clipToBounds :: Line -> Line
+clipToBounds (Line s (Cuboid (xs, xe) (ys, ye) (zs, ze))) =
+    Line
+        s
+        (Cuboid
+             (max (-50) xs, min 50 xe)
+             (max (-50) ys, min 50 ye)
+             (max (-50) zs, min 50 ze))
+
+solve1 :: [Line] -> Integer
+solve1 =
+    sum .
+    map (size . clipToBounds) . filter isInBounds . foldr step [] . reverse
 
 solve2 :: [Line] -> Integer
-solve2 = sum . map size' . foldr step' [] . reverse
+solve2 = sum . map size . foldr step [] . reverse
 
 solve :: String -> String
 solve = show . (solve1 &&& solve2) . parseContent
