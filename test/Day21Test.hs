@@ -6,7 +6,7 @@ import Day21
 import Test.Framework
 
 sampleInput1 :: Input
-sampleInput1 = mempty
+sampleInput1 = (0, 0)
 
 sampleOutput1 :: ()
 sampleOutput1 = ()

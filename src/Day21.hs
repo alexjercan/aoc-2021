@@ -53,12 +53,12 @@ step (Game pa sa pb sb, Dice d n) =
     valueDice x = cycle100 x + cycle100 (x + 1) + cycle100 (x + 2)
 
 checkEnd :: DetGame -> Bool
-checkEnd (Game pa sa pb sb, _) = sa >= 1000 || sb >= 1000
+checkEnd (Game _ sa _ sb, _) = sa >= 1000 || sb >= 1000
 
 solve1 :: Input -> Int
 solve1 = answer . head . dropWhile (not . checkEnd) . iterate step . mkDetGame
   where
-    answer (Game pa sa pb sb, Dice _ n) = min sa sb * n
+    answer (Game _ sa _ sb, Dice _ n) = min sa sb * n
 
 data Splits' a =
     Splits a a
@@ -87,7 +87,7 @@ rolls = [(3, 1), (4, 3), (5, 6), (6, 7), (7, 6), (8, 3), (9, 1)]
 type Eval = State (M.Map Game Splits)
 
 stepBfsM :: Game -> Splits -> (Int, Integer) -> Eval Splits
-stepBfsM g@(Game pa sa pb sb) w (roll, freq) = do
+stepBfsM (Game pa sa pb sb) w (roll, freq) = do
     s <- solutionM (Game pb sb pa' sa')
     return $ (+) <$> w <*> ((* freq) <$> flipSplits s)
   where
@@ -95,7 +95,7 @@ stepBfsM g@(Game pa sa pb sb) w (roll, freq) = do
     sa' = sa + pa'
 
 solutionM :: Game -> Eval Splits
-solutionM g@(Game pa sa pb sb)
+solutionM g@(Game _ _ _ sb)
     | sb >= 21 = return $ Splits 0 1
     | otherwise = do
         ms <- get
