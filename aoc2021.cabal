@@ -11,6 +11,7 @@ extra-source-files:
 
 executable Aoc2021
     main-is:          Main.hs
+    ghc-options:      -O3 -threaded -rtsopts -with-rtsopts=-N4
 
     build-depends:    base ^>=4.13.0.0,
                       mtl, split, containers, parsec, PSQueue, array
