@@ -25,12 +25,11 @@ ltJust alt (Just c) = alt < c
 handleNeighbor ::
        (Ord a, Ord t, Num t)
     => a -- ^Source Node
-    -> (a -> a -> t) -- ^Cost function from source to neighbor
-    -> a -- ^Neighbor
+    -> (t, a) -- ^Neighbor and cost
     -> DijkstraState a t -- ^Original state
     -> DijkstraState a t
-handleNeighbor u costF v (DijkstraState s q dist prev) = do
-    let alt = dist M.! u + costF u v
+handleNeighbor u (cost, v) (DijkstraState s q dist prev) = do
+    let alt = dist M.! u + cost
     if alt `ltJust` P.lookup v q
         then DijkstraState
                  (S.delete v s)
@@ -42,11 +41,10 @@ handleNeighbor u costF v (DijkstraState s q dist prev) = do
 dijkstraM ::
        (Ord a, Ord t, Num t)
     => (a -> Bool) -- ^Check if node is target
-    -> (a -> [a]) -- ^Generate neighbors for a node
-    -> (a -> a -> t) -- ^Cost function from node to other node
+    -> (a -> [(t, a)]) -- ^Generate neighbors for a node and the cost
     -> (M.Map a t -> M.Map a a -> b) -- ^Generate answer based on the final scores and path
     -> State (DijkstraState a t) b
-dijkstraM isTarget getNeighbors costF answerF = do
+dijkstraM isTarget getNeighbors answerF = do
     (DijkstraState s q dist prev) <- get
     if P.null q
         then return $ answerF dist prev
@@ -59,20 +57,19 @@ dijkstraM isTarget getNeighbors costF answerF = do
                 then return $ answerF dist prev
                 else do
                     forM_
-                        (filter (not . (`S.member` s')) (getNeighbors u))
-                        (modify . handleNeighbor u costF)
-                    dijkstraM isTarget getNeighbors costF answerF
+                        (filter (not . (`S.member` s') . snd) (getNeighbors u))
+                        (modify . handleNeighbor u)
+                    dijkstraM isTarget getNeighbors answerF
 
 dijkstra ::
        (Ord a, Ord t, Num t)
     => a -- ^Source node
     -> a -- ^Target node
-    -> (a -> [a]) -- ^Generate neighbors
-    -> (a -> a -> t) -- ^Compute cost from node to other node
+    -> (a -> [(t, a)]) -- ^Generate neighbors and costs
     -> (M.Map a t -> M.Map a a -> b) -- ^Generate answer based on the final scores and path
     -> b
-dijkstra source target getNeighbors costF answerF =
-    evalState (dijkstraM isTarget getNeighbors costF answerF) s
+dijkstra source target getNeighbors answerF =
+    evalState (dijkstraM isTarget getNeighbors answerF) s
   where
     isTarget = (==) target
     s =

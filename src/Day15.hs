@@ -25,14 +25,11 @@ replicateMat n = go n
     go 1 ms = replicateCol n ms
     go i ms = replicateCol n ms ++ go (i - 1) (map (map wrap) ms)
 
-getNeighbors :: Int -> Int -> (Int, Int) -> [(Int, Int)]
-getNeighbors n m (i, j) =
-    filter isValid [(i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)]
+getNeighbors :: Int -> Int -> M.Map (Int, Int) Int -> (Int, Int) -> [(Int, (Int, Int))]
+getNeighbors n m vs (i, j) = map (\p -> (vs M.! p, p)) neighs
   where
+    neighs = filter isValid [(i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)]
     isValid (x, y) = 0 <= x && x < n && 0 <= y && y < m
-
-cost :: M.Map (Int, Int) Int -> (Int, Int) -> (Int, Int) -> Int
-cost m _ p = m M.! p
 
 answer ::
        (Int, Int) -> M.Map (Int, Int) Int -> M.Map (Int, Int) (Int, Int) -> Int
@@ -43,8 +40,7 @@ solution ms =
     dijkstra
         (0, 0)
         (n - 1, m - 1)
-        (getNeighbors n m)
-        (cost vs)
+        (getNeighbors n m vs)
         (answer (n - 1, m - 1))
   where
     n = length ms
