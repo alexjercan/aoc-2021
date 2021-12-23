@@ -59,64 +59,66 @@ cost i C = i * 100
 cost i D = i * 1000
 cost _ N = 0
 
-emptySpaces :: A.Array Int Cell -> [Int]
-emptySpaces arr = takeWhile (\i -> arr A.! i == N) $ A.indices arr
+emptySpaces :: Cell -> A.Array Int Cell -> [Int]
+emptySpaces c arr
+    | all (==c) $ filter (/=N) (A.elems arr) = takeWhile (\i -> arr A.! i == N) $ A.indices arr
+    | otherwise = []
 
-fromBufferToRoom01 (House (Buffer A N c d e f g) r1 r2 r3 r4) = map (\i -> (cost (3+i) A, House (Buffer N N c d e f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces r1)
+fromBufferToRoom01 (House (Buffer A N c d e f g) r1 r2 r3 r4) = map (\i -> (cost (3+i) A, House (Buffer N N c d e f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces A r1)
 fromBufferToRoom01 _ = []
-fromBufferToRoom02 (House (Buffer a A c d e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) A, House (Buffer a N c d e f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces r1)
+fromBufferToRoom02 (House (Buffer a A c d e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) A, House (Buffer a N c d e f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces A r1)
 fromBufferToRoom02 _ = []
-fromBufferToRoom03 (House (Buffer a b A d e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) A, House (Buffer a b N d e f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces r1)
+fromBufferToRoom03 (House (Buffer a b A d e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) A, House (Buffer a b N d e f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces A r1)
 fromBufferToRoom03 _ = []
-fromBufferToRoom04 (House (Buffer a b N A e f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) A, House (Buffer a b N N e f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces r1)
+fromBufferToRoom04 (House (Buffer a b N A e f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) A, House (Buffer a b N N e f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces A r1)
 fromBufferToRoom04 _ = []
-fromBufferToRoom05 (House (Buffer a b N N A f g) r1 r2 r3 r4) = map (\i -> (cost (6+i) A, House (Buffer a b N N N f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces r1)
+fromBufferToRoom05 (House (Buffer a b N N A f g) r1 r2 r3 r4) = map (\i -> (cost (6+i) A, House (Buffer a b N N N f g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces A r1)
 fromBufferToRoom05 _ = []
-fromBufferToRoom06 (House (Buffer a b N N N A g) r1 r2 r3 r4) = map (\i -> (cost (8+i) A, House (Buffer a b N N N N g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces r1)
+fromBufferToRoom06 (House (Buffer a b N N N A g) r1 r2 r3 r4) = map (\i -> (cost (8+i) A, House (Buffer a b N N N N g) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces A r1)
 fromBufferToRoom06 _ = []
-fromBufferToRoom07 (House (Buffer a b N N N N A) r1 r2 r3 r4) = map (\i -> (cost (9+i) A, House (Buffer a b N N N N N) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces r1)
+fromBufferToRoom07 (House (Buffer a b N N N N A) r1 r2 r3 r4) = map (\i -> (cost (9+i) A, House (Buffer a b N N N N N) (r1 A.// [(i, A)]) r2 r3 r4)) (emptySpaces A r1)
 fromBufferToRoom07 _ = []
-fromBufferToRoom08 (House (Buffer B N N d e f g) r1 r2 r3 r4) = map (\i -> (cost (5+i) B, House (Buffer N N N d e f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces r2)
+fromBufferToRoom08 (House (Buffer B N N d e f g) r1 r2 r3 r4) = map (\i -> (cost (5+i) B, House (Buffer N N N d e f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces B r2)
 fromBufferToRoom08 _ = []
-fromBufferToRoom09 (House (Buffer a B N d e f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) B, House (Buffer a N N d e f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces r2)
+fromBufferToRoom09 (House (Buffer a B N d e f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) B, House (Buffer a N N d e f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces B r2)
 fromBufferToRoom09 _ = []
-fromBufferToRoom10 (House (Buffer a b B d e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) B, House (Buffer a b N d e f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces r2)
+fromBufferToRoom10 (House (Buffer a b B d e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) B, House (Buffer a b N d e f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces B r2)
 fromBufferToRoom10 _ = []
-fromBufferToRoom11 (House (Buffer a b c B e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) B, House (Buffer a b c N e f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces r2)
+fromBufferToRoom11 (House (Buffer a b c B e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) B, House (Buffer a b c N e f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces B r2)
 fromBufferToRoom11 _ = []
-fromBufferToRoom12 (House (Buffer a b c N B f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) B, House (Buffer a b c N N f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces r2)
+fromBufferToRoom12 (House (Buffer a b c N B f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) B, House (Buffer a b c N N f g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces B r2)
 fromBufferToRoom12 _ = []
-fromBufferToRoom13 (House (Buffer a b c N N B g) r1 r2 r3 r4) = map (\i -> (cost (6+i) B, House (Buffer a b c N N N g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces r2)
+fromBufferToRoom13 (House (Buffer a b c N N B g) r1 r2 r3 r4) = map (\i -> (cost (6+i) B, House (Buffer a b c N N N g) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces B r2)
 fromBufferToRoom13 _ = []
-fromBufferToRoom14 (House (Buffer a b c N N N B) r1 r2 r3 r4) = map (\i -> (cost (7+i) B, House (Buffer a b c N N N N) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces r2)
+fromBufferToRoom14 (House (Buffer a b c N N N B) r1 r2 r3 r4) = map (\i -> (cost (7+i) B, House (Buffer a b c N N N N) r1 (r2 A.// [(i, B)]) r3 r4)) (emptySpaces B r2)
 fromBufferToRoom14 _ = []
-fromBufferToRoom15 (House (Buffer C N N N e f g) r1 r2 r3 r4) = map (\i -> (cost (7+i) C, House (Buffer N N N N e f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces r3)
+fromBufferToRoom15 (House (Buffer C N N N e f g) r1 r2 r3 r4) = map (\i -> (cost (7+i) C, House (Buffer N N N N e f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces C r3)
 fromBufferToRoom15 _ = []
-fromBufferToRoom16 (House (Buffer a C N N e f g) r1 r2 r3 r4) = map (\i -> (cost (6+i) C, House (Buffer a N N N e f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces r3)
+fromBufferToRoom16 (House (Buffer a C N N e f g) r1 r2 r3 r4) = map (\i -> (cost (6+i) C, House (Buffer a N N N e f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces C r3)
 fromBufferToRoom16 _ = []
-fromBufferToRoom17 (House (Buffer a b C N e f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) C, House (Buffer a b N N e f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces r3)
+fromBufferToRoom17 (House (Buffer a b C N e f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) C, House (Buffer a b N N e f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces C r3)
 fromBufferToRoom17 _ = []
-fromBufferToRoom18 (House (Buffer a b c C e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) C, House (Buffer a b c N e f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces r3)
+fromBufferToRoom18 (House (Buffer a b c C e f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) C, House (Buffer a b c N e f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces C r3)
 fromBufferToRoom18 _ = []
-fromBufferToRoom19 (House (Buffer a b c d C f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) C, House (Buffer a b c d N f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces r3)
+fromBufferToRoom19 (House (Buffer a b c d C f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) C, House (Buffer a b c d N f g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces C r3)
 fromBufferToRoom19 _ = []
-fromBufferToRoom20 (House (Buffer a b c d N C g) r1 r2 r3 r4) = map (\i -> (cost (4+i) C, House (Buffer a b c d N N g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces r3)
+fromBufferToRoom20 (House (Buffer a b c d N C g) r1 r2 r3 r4) = map (\i -> (cost (4+i) C, House (Buffer a b c d N N g) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces C r3)
 fromBufferToRoom20 _ = []
-fromBufferToRoom21 (House (Buffer a b c d N N C) r1 r2 r3 r4) = map (\i -> (cost (5+i) C, House (Buffer a b c d N N N) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces r3)
+fromBufferToRoom21 (House (Buffer a b c d N N C) r1 r2 r3 r4) = map (\i -> (cost (5+i) C, House (Buffer a b c d N N N) r1 r2 (r3 A.// [(i, C)]) r4)) (emptySpaces C r3)
 fromBufferToRoom21 _ = []
-fromBufferToRoom22 (House (Buffer D N N N N f g) r1 r2 r3 r4) = map (\i -> (cost (9+i) D, House (Buffer N N N N N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces r4)
+fromBufferToRoom22 (House (Buffer D N N N N f g) r1 r2 r3 r4) = map (\i -> (cost (9+i) D, House (Buffer N N N N N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces D r4)
 fromBufferToRoom22 _ = []
-fromBufferToRoom23 (House (Buffer a D N N N f g) r1 r2 r3 r4) = map (\i -> (cost (8+i) D, House (Buffer a N N N N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces r4)
+fromBufferToRoom23 (House (Buffer a D N N N f g) r1 r2 r3 r4) = map (\i -> (cost (8+i) D, House (Buffer a N N N N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces D r4)
 fromBufferToRoom23 _ = []
-fromBufferToRoom24 (House (Buffer a b D N N f g) r1 r2 r3 r4) = map (\i -> (cost (6+i) D, House (Buffer a b N N N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces r4)
+fromBufferToRoom24 (House (Buffer a b D N N f g) r1 r2 r3 r4) = map (\i -> (cost (6+i) D, House (Buffer a b N N N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces D r4)
 fromBufferToRoom24 _ = []
-fromBufferToRoom25 (House (Buffer a b c D N f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) D, House (Buffer a b c N N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces r4)
+fromBufferToRoom25 (House (Buffer a b c D N f g) r1 r2 r3 r4) = map (\i -> (cost (4+i) D, House (Buffer a b c N N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces D r4)
 fromBufferToRoom25 _ = []
-fromBufferToRoom26 (House (Buffer a b c d D f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) D, House (Buffer a b c d N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces r4)
+fromBufferToRoom26 (House (Buffer a b c d D f g) r1 r2 r3 r4) = map (\i -> (cost (2+i) D, House (Buffer a b c d N f g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces D r4)
 fromBufferToRoom26 _ = []
-fromBufferToRoom27 (House (Buffer a b c d e D g) r1 r2 r3 r4) = map (\i -> (cost (2+i) D, House (Buffer a b c d e N g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces r4)
+fromBufferToRoom27 (House (Buffer a b c d e D g) r1 r2 r3 r4) = map (\i -> (cost (2+i) D, House (Buffer a b c d e N g) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces D r4)
 fromBufferToRoom27 _ = []
-fromBufferToRoom28 (House (Buffer a b c d e N D) r1 r2 r3 r4) = map (\i -> (cost (3+i) D, House (Buffer a b c d e N N) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces r4)
+fromBufferToRoom28 (House (Buffer a b c d e N D) r1 r2 r3 r4) = map (\i -> (cost (3+i) D, House (Buffer a b c d e N N) r1 r2 r3 (r4 A.// [(i, D)]))) (emptySpaces D r4)
 fromBufferToRoom28 _ = []
 
 fromBufferToRoom :: [House -> [(Int, House)]]
@@ -213,7 +215,7 @@ fromRoomToBuffer :: [House -> Maybe (Int, House)]
 fromRoomToBuffer = [fromRoomToBuffer01, fromRoomToBuffer02, fromRoomToBuffer03, fromRoomToBuffer04, fromRoomToBuffer05, fromRoomToBuffer06, fromRoomToBuffer07, fromRoomToBuffer08, fromRoomToBuffer09, fromRoomToBuffer10, fromRoomToBuffer11, fromRoomToBuffer12, fromRoomToBuffer13, fromRoomToBuffer14, fromRoomToBuffer15, fromRoomToBuffer16, fromRoomToBuffer17, fromRoomToBuffer18, fromRoomToBuffer19, fromRoomToBuffer20, fromRoomToBuffer21, fromRoomToBuffer22, fromRoomToBuffer23, fromRoomToBuffer24, fromRoomToBuffer25, fromRoomToBuffer26, fromRoomToBuffer27, fromRoomToBuffer28]
 
 getNeighbors :: House -> [(Int, House)]
-getNeighbors house = filter (not . isNotWinnable . snd) $ concatMap (\f -> f house) fromBufferToRoom ++ mapMaybe (\f -> f house) fromRoomToBuffer
+getNeighbors house = concatMap (\f -> f house) fromBufferToRoom ++ mapMaybe (\f -> f house) fromRoomToBuffer
 
 answerF :: Ord k => k -> M.Map k a -> p -> a
 answerF p dist _ = dist M.! p
