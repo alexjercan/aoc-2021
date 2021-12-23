@@ -19,13 +19,13 @@ minimumVertex = P.key . fromJust . P.findMin
 
 handleNeighbor ::
        (Ord a, Ord t, Num t)
-    => a
-    -> (a -> t)
-    -> a
-    -> DijkstraState a t
+    => a -- ^Source Node
+    -> (a -> a -> t) -- ^Cost function from source to neighbor
+    -> a -- ^Neighbor
+    -> DijkstraState a t -- ^Original state
     -> DijkstraState a t
 handleNeighbor u costF v (DijkstraState q dist prev) = do
-    let alt = dist M.! u + costF v
+    let alt = dist M.! u + costF u v
     if alt < fromJust (P.lookup v q)
         then DijkstraState
                  (P.insert v alt q)
@@ -35,10 +35,10 @@ handleNeighbor u costF v (DijkstraState q dist prev) = do
 
 dijkstraM ::
        (Ord a, Ord t, Num t)
-    => (a -> Bool)
-    -> (a -> [a])
-    -> (a -> t)
-    -> (M.Map a t -> M.Map a a -> b)
+    => (a -> Bool) -- ^Check if node is target
+    -> (a -> [a]) -- ^Generate neighbors for a node
+    -> (a -> a -> t) -- ^Cost function from node to other node
+    -> (M.Map a t -> M.Map a a -> b) -- ^Generate answer based on the final scores and path
     -> State (DijkstraState a t) b
 dijkstraM isTarget getNeighbors costF answerF = do
     (DijkstraState q dist prev) <- get
@@ -62,7 +62,7 @@ dijkstra ::
     -> a
     -> [a]
     -> (a -> [a])
-    -> (a -> t)
+    -> (a -> a -> t)
     -> (M.Map a t -> M.Map a a -> b)
     -> t
     -> b
@@ -75,4 +75,3 @@ dijkstra source target vs getNeighbors costF anserF maxT =
             (P.insert source 0 $ P.fromList $ map (P.:-> maxT) vs)
             (M.singleton source 0)
             M.empty
-

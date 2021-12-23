@@ -31,8 +31,8 @@ getNeighbors n m (i, j) =
   where
     isValid (x, y) = 0 <= x && x < n && 0 <= y && y < m
 
-cost :: M.Map (Int, Int) Int -> (Int, Int) -> Int
-cost = (M.!)
+cost :: M.Map (Int, Int) Int -> (Int, Int) -> (Int, Int) -> Int
+cost m _ p = m M.! p
 
 isTarget :: (Int, Int) -> (Int, Int) -> Bool
 isTarget = (==)
