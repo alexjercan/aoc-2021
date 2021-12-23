@@ -8,7 +8,7 @@ import Control.Monad.State
     , modify
     )
 import qualified Data.Map as M
-import Data.Maybe ( fromJust )
+import Data.Maybe (fromJust)
 import qualified Data.PSQueue as P
 import qualified Data.Set as S
 
@@ -65,14 +65,14 @@ dijkstraM isTarget getNeighbors costF answerF = do
 
 dijkstra ::
        (Ord a, Ord t, Num t)
-    => a
-    -> a
-    -> (a -> [a])
-    -> (a -> a -> t)
-    -> (M.Map a t -> M.Map a a -> b)
+    => a -- ^Source node
+    -> a -- ^Target node
+    -> (a -> [a]) -- ^Generate neighbors
+    -> (a -> a -> t) -- ^Compute cost from node to other node
+    -> (M.Map a t -> M.Map a a -> b) -- ^Generate answer based on the final scores and path
     -> b
-dijkstra source target getNeighbors costF anserF =
-    evalState (dijkstraM isTarget getNeighbors costF anserF) s
+dijkstra source target getNeighbors costF answerF =
+    evalState (dijkstraM isTarget getNeighbors costF answerF) s
   where
     isTarget = (==) target
     s =

@@ -34,9 +34,6 @@ getNeighbors n m (i, j) =
 cost :: M.Map (Int, Int) Int -> (Int, Int) -> (Int, Int) -> Int
 cost m _ p = m M.! p
 
-isTarget :: (Int, Int) -> (Int, Int) -> Bool
-isTarget = (==)
-
 answer ::
        (Int, Int) -> M.Map (Int, Int) Int -> M.Map (Int, Int) (Int, Int) -> Int
 answer p dist _ = dist M.! p
