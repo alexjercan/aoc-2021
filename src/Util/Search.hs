@@ -8,14 +8,19 @@ import Control.Monad.State
     , modify
     )
 import qualified Data.Map as M
-import Data.Maybe (fromJust, isJust)
+import Data.Maybe ( fromJust )
 import qualified Data.PSQueue as P
+import qualified Data.Set as S
 
 data DijkstraState a t =
-    DijkstraState (P.PSQ a t) (M.Map a t) (M.Map a a)
+    DijkstraState (S.Set a) (P.PSQ a t) (M.Map a t) (M.Map a a)
 
 minimumVertex :: (Ord a, Ord t) => P.PSQ a t -> a
 minimumVertex = P.key . fromJust . P.findMin
+
+ltJust :: (Ord t, Num t) => t -> Maybe t -> Bool
+ltJust _ Nothing = True
+ltJust alt (Just c) = alt < c
 
 handleNeighbor ::
        (Ord a, Ord t, Num t)
@@ -24,14 +29,15 @@ handleNeighbor ::
     -> a -- ^Neighbor
     -> DijkstraState a t -- ^Original state
     -> DijkstraState a t
-handleNeighbor u costF v (DijkstraState q dist prev) = do
+handleNeighbor u costF v (DijkstraState s q dist prev) = do
     let alt = dist M.! u + costF u v
-    if alt < fromJust (P.lookup v q)
+    if alt `ltJust` P.lookup v q
         then DijkstraState
+                 (S.delete v s)
                  (P.insert v alt q)
                  (M.insert v alt dist)
                  (M.insert v u prev)
-        else DijkstraState q dist prev
+        else DijkstraState s q dist prev
 
 dijkstraM ::
        (Ord a, Ord t, Num t)
@@ -41,18 +47,19 @@ dijkstraM ::
     -> (M.Map a t -> M.Map a a -> b) -- ^Generate answer based on the final scores and path
     -> State (DijkstraState a t) b
 dijkstraM isTarget getNeighbors costF answerF = do
-    (DijkstraState q dist prev) <- get
+    (DijkstraState s q dist prev) <- get
     if P.null q
         then return $ answerF dist prev
         else do
             let u = minimumVertex q
             let q' = P.delete u q
-            put (DijkstraState q' dist prev)
+            let s' = S.insert u s
+            put (DijkstraState s' q' dist prev)
             if isTarget u
                 then return $ answerF dist prev
                 else do
                     forM_
-                        (filter (isJust . (`P.lookup` q)) (getNeighbors u))
+                        (filter (not . (`S.member` s')) (getNeighbors u))
                         (modify . handleNeighbor u costF)
                     dijkstraM isTarget getNeighbors costF answerF
 
@@ -60,18 +67,17 @@ dijkstra ::
        (Ord a, Ord t, Num t)
     => a
     -> a
-    -> [a]
     -> (a -> [a])
     -> (a -> a -> t)
     -> (M.Map a t -> M.Map a a -> b)
-    -> t
     -> b
-dijkstra source target vs getNeighbors costF anserF maxT =
+dijkstra source target getNeighbors costF anserF =
     evalState (dijkstraM isTarget getNeighbors costF anserF) s
   where
     isTarget = (==) target
     s =
         DijkstraState
-            (P.insert source 0 $ P.fromList $ map (P.:-> maxT) vs)
+            S.empty
+            (P.singleton source 0)
             (M.singleton source 0)
             M.empty

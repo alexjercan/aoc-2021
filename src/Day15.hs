@@ -46,11 +46,9 @@ solution ms =
     dijkstra
         (0, 0)
         (n - 1, m - 1)
-        indices
         (getNeighbors n m)
         (cost vs)
         (answer (n - 1, m - 1))
-        9999
   where
     n = length ms
     m = length $ head ms
