@@ -188,46 +188,19 @@ fromRoomToBuffer27 _ = Nothing
 fromRoomToBuffer28 (House (Buffer a b c d e N N) r1 r2 r3 r4) = maybeUpdateHouse (firstInRoom r4) (\i -> (cost (3+i) (r4 A.! i), House (Buffer a b c d e N (r4 A.! i)) r1 r2 r3 (r4 A.// [(i, N)])))
 fromRoomToBuffer28 _ = Nothing
 
-isNotWinnable :: House -> Bool
-isNotWinnable (House (Buffer _ _ C A _ _ _) _ _ _ _) = True
-isNotWinnable (House (Buffer _ _ D A _ _ _) _ _ _ _) = True
-isNotWinnable (House (Buffer _ _ D _ A _ _) _ _ _ _) = True
-isNotWinnable (House (Buffer _ _ _ D A _ _) _ _ _ _) = True
-isNotWinnable (House (Buffer _ _ _ D B _ _) _ _ _ _) = True
-isNotWinnable (House (Buffer a b c d e f g) r1 r2 r3 r4) = b == A && c == A && isRoomFull r1
-                                                        || b == B && c == A && isRoomFull r1
-                                                        || b == C && c == A && isRoomFull r1
-                                                        || b == D && c == A && isRoomFull r1
-                                                        || c == B && d == A && isRoomFull r2
-                                                        || c == B && d == B && isRoomFull r2
-                                                        || c == C && d == B && isRoomFull r2
-                                                        || c == D && d == B && isRoomFull r2
-                                                        || d == C && e == A && isRoomFull r3
-                                                        || d == C && e == B && isRoomFull r3
-                                                        || d == C && e == C && isRoomFull r3
-                                                        || d == D && e == C && isRoomFull r3
-                                                        || e == D && e == A && isRoomFull r4
-                                                        || e == D && e == B && isRoomFull r4
-                                                        || e == D && e == C && isRoomFull r4
-                                                        || e == D && e == D && isRoomFull r4
-
 fromRoomToBuffer :: [House -> Maybe (Int, House)]
 fromRoomToBuffer = [fromRoomToBuffer01, fromRoomToBuffer02, fromRoomToBuffer03, fromRoomToBuffer04, fromRoomToBuffer05, fromRoomToBuffer06, fromRoomToBuffer07, fromRoomToBuffer08, fromRoomToBuffer09, fromRoomToBuffer10, fromRoomToBuffer11, fromRoomToBuffer12, fromRoomToBuffer13, fromRoomToBuffer14, fromRoomToBuffer15, fromRoomToBuffer16, fromRoomToBuffer17, fromRoomToBuffer18, fromRoomToBuffer19, fromRoomToBuffer20, fromRoomToBuffer21, fromRoomToBuffer22, fromRoomToBuffer23, fromRoomToBuffer24, fromRoomToBuffer25, fromRoomToBuffer26, fromRoomToBuffer27, fromRoomToBuffer28]
 
 getNeighbors :: House -> [(Int, House)]
 getNeighbors house = concatMap (\f -> f house) fromBufferToRoom ++ mapMaybe (\f -> f house) fromRoomToBuffer
 
-answerF :: Ord k => k -> M.Map k a -> p -> a
 answerF p dist _ = dist M.! p
 
-solution :: House -> Int
 solution house = dijkstra house target getNeighbors (answerF target)
     where target = constHouse house
 
-solve1 :: Input -> Int
 solve1 = solution . mkHouse
 
-solve2 :: Input -> Int
 solve2 = solution . mkHouse
 
 solve :: String -> String
