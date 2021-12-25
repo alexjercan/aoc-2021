@@ -3,6 +3,8 @@ module Day24 where
 import Control.Arrow (Arrow((&&&)))
 import Data.List.Split (splitOn)
 
+type Input = String
+
 parseContent :: String -> ([Integer], [Integer])
 parseContent = unzip . map g . tail . splitOn ["inp w"] . lines
   where
