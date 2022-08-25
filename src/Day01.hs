@@ -1,30 +1,15 @@
 module Day01 where
 
-import Control.Applicative ( ZipList(ZipList, getZipList) )
-import Data.List ( tails )
+import Util.Input
+import Util.List
 import Control.Arrow ((&&&))
 
-diff :: [Int] -> [Int]
-diff xs = zipWith (-) (tail xs) xs
+solve1 :: [Int] -> Int
+solve1 = length . filter (<0) . diff 1
 
-solution1 :: [Int] -> Int
-solution1 = length . filter (>0) . diff
-
-transpose' :: [[a]] -> [[a]]
-transpose' = getZipList . traverse ZipList
-
-windows :: Int -> [a] -> [[a]]
-windows m = transpose' . take m . tails
-
-solution2 :: [Int] -> Int
-solution2 = solution1 . map sum . windows 3
-
-solve1 :: String -> Int
-solve1 content = solution1 $ map read $ lines content
-
-solve2 :: String -> Int
-solve2 content = solution2 $ map read $ lines content
+solve2 :: [Int] -> Int
+solve2 = solve1 . map sum . slidingWindows 3
 
 solve :: String -> String
-solve = show . (solve1 &&& solve2)
+solve = show . (solve1 &&& solve2) . numberColumn
 

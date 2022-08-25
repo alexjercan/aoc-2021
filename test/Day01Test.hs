@@ -5,8 +5,8 @@ module Day01Test where
 import Day01
 import Test.Framework
 
-sampleInput :: String
-sampleInput = "199\n200\n208\n210\n200\n207\n240\n269\n260\n263\n"
+sampleInput :: [Int]
+sampleInput = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263]
 
 test_solve1 :: IO ()
 test_solve1 = do

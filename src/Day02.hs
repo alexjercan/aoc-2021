@@ -1,53 +1,41 @@
 module Day02 where
 
-import Control.Monad.State
-    ( execState, MonadState(put, get), State )
 import Control.Arrow ((&&&))
+import Util.Input (stringNumberColumn)
 
-parseCommand :: String -> (String, Int)
-parseCommand c = (head cs, read $ cs !! 1)
-    where cs = words c
+data Command = Forward Int | Down Int | Up Int deriving Show
+
+toCommand :: (String, Int) -> Command
+toCommand ("forward", x) = Forward x
+toCommand ("down", x) = Down x
+toCommand ("up", x) = Up x
+toCommand _ = undefined
+
+parseContent :: String -> [Command]
+parseContent = map toCommand . stringNumberColumn " "
 
 type Submarine = (Int, Int, Int)
-type Move = State Submarine
-type Command = (String, Int)
 
-moveM1 :: Command -> Move ()
-moveM1 ("forward", dx) = do
-    (x, y, aim) <- get
-    put (x + dx, y, aim)
-moveM1 ("down", dy) = do
-    (x, y, aim) <- get
-    put (x, y + dy, aim)
-moveM1 ("up", dy) = do
-    (x, y, aim) <- get
-    put (x, y - dy, aim)
-moveM1 _ = undefined
+move1 :: Submarine -> Command -> Submarine
+move1 (x, y, aim) (Forward dx) = (x + dx, y, aim)
+move1 (x, y, aim) (Down dx) = (x, y + dx, aim)
+move1 (x, y, aim) (Up dx) = (x, y - dx, aim)
 
-moveM2 :: Command -> Move ()
-moveM2 ("forward", dx) = do
-    (x, y, aim) <- get
-    put (x + dx, y + aim * dx, aim)
-moveM2 ("down", dy) = do
-    (x, y, aim) <- get
-    put (x, y, aim + dy)
-moveM2 ("up", dy) = do
-    (x, y, aim) <- get
-    put (x, y, aim - dy)
-moveM2 _ = undefined
+move2 :: Submarine -> Command -> Submarine
+move2 (x, y, aim) (Forward dx) = (x + dx, y + aim * dx, aim)
+move2 (x, y, aim) (Down dx) = (x, y, aim + dx)
+move2 (x, y, aim) (Up dx) = (x, y, aim - dx)
 
-solution :: (Command -> Move ()) -> [String] -> Int
-solution moveM xs = answer $ execState (mapM moveM cmds) (0, 0, 0)
-    where
-        answer (x, y, _) = x * y
-        cmds = map parseCommand xs
+solution :: (Foldable t, Num a1, Num c) => ((a1, a1, c) -> a2 -> (a1, a1, c)) -> t a2 -> a1
+solution move = answer . foldl move (0, 0, 0)
+    where answer (x, y, _) = x * y
 
-solve1 :: String -> Int
-solve1 content = solution moveM1 $ lines content
+solve1 :: [Command] -> Int
+solve1 = solution move1
 
-solve2 :: String -> Int
-solve2 content = solution moveM2 $ lines content
+solve2 :: [Command] -> Int
+solve2 = solution move2
 
 solve :: String -> String
-solve = show . (solve1 &&& solve2)
+solve = show . (solve1 &&& solve2) . parseContent
 

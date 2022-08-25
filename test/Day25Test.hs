@@ -6,10 +6,7 @@ import Day25
 import Test.Framework
 
 sampleInput1 :: Input
-sampleInput1 = mempty
-
-sampleOutput1 :: ()
-sampleOutput1 = ()
+sampleInput1 = undefined
 
 test_solve1 :: IO ()
 test_solve1 = assertFailure "Not Implemented"
